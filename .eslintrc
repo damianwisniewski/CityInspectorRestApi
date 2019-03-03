@@ -1,0 +1,23 @@
+{
+	"env": {
+		"es6": true,
+		"node": true
+	},
+	"extends": "eslint:recommended",
+	"parserOptions": {
+		"ecmaVersion": 2018
+	},
+	"rules": {
+		"camelcase": "error",
+		"eqeqeq": "error",
+		"no-eval": "error",
+		"no-extend-native": "error",
+		"no-multi-str": "error",
+		"no-var": "error",
+		"prefer-const": "error",
+		"no-console": "off",
+		"arrow-spacing": "error",
+		"block-spacing": "error",
+		"brace-style": "error"
+	}
+}
