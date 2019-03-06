@@ -11,8 +11,8 @@
 		"url": "git+https://github.com/damianwisniewski/CityInspectorRestApi.git"
 	},
 	"scripts": {
-		"start": "cross-env NODE_ENV=production node app/index.js",
-		"start:dev": "cross-env NODE_ENV=development nodemon app/index.js",
+		"start": "cross-env NODE_ENV=PRODUCTION node app/index.js",
+		"start:dev": "cross-env NODE_ENV=DEVELOPMENT nodemon app/index.js",
 		"test": "",
 		"test:coverage": "",
 		"test:units": "",
@@ -35,8 +35,13 @@
 	},
 	"dependencies": {
 		"body-parser": "^1.18.3",
+		"cloudinary": "^1.13.2",
 		"cors": "^2.8.5",
 		"dotenv": "^6.2.0",
-		"express": "^4.16.4"
+		"express": "^4.16.4",
+		"mysql2": "^1.6.5",
+		"nodemailer": "^5.1.1",
+		"sequelize": "^4.43.0",
+		"uuid": "^3.3.2"
 	}
 }
