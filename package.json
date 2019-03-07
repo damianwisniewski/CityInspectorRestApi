@@ -13,24 +13,36 @@
 	"scripts": {
 		"start": "cross-env NODE_ENV=PRODUCTION node app/index.js",
 		"start:dev": "cross-env NODE_ENV=DEVELOPMENT nodemon app/index.js",
-		"test": "",
-		"test:coverage": "",
-		"test:units": "",
-		"test:endpoints": "",
-		"lint": "eslint ./**/*.js",
-		"prettier": "prettier --check './**/*.js'",
+		"test": "npm run test:unit && npm run test:endpoint",
+		"test:coverage": "nyc report",
+		"test:unit": "cross-env NODE_ENV=TEST nyc mocha tests/units/**/*.test.js",
+		"test:endpoint": "cross-env NODE_ENV=TEST mocha tests/endpoints/**/*.test.js",
+		"lint": "eslint **/*",
 		"release": ""
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "npm run lint && npm run prettier"
+			"pre-commit": "echo \"Hook lint later\" \"Hook test here later\""
 		}
 	},
+	"nyc": {
+    "include": [
+      "app/**/*.js"
+    ],
+    "exclude": [
+      "tests/**/*.test.js"
+    ],
+    "all": true
+  },
 	"devDependencies": {
+		"chai": "^4.2.0",
+		"chai-http": "^4.2.1",
 		"cross-env": "^5.2.0",
 		"eslint": "^5.15.0",
 		"husky": "^1.3.1",
+		"mocha": "^6.0.2",
 		"nodemon": "^1.18.10",
+		"nyc": "^13.3.0",
 		"prettier": "1.16.4"
 	},
 	"dependencies": {
