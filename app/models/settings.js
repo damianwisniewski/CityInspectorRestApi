@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('settings', {
+	const Settings = sequelize.define('settings', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -17,4 +17,10 @@ module.exports = (sequelize, Sequelize) => {
 			defaultValue: 'N',
 		},
 	})
+
+	Settings.associate = database => {
+		Settings.hasMany(database.User)
+	}
+
+	return Settings
 }

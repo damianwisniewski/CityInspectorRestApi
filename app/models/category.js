@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('category', {
+	const Category = sequelize.define('category', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -8,4 +8,8 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		name: Sequelize.ENUM('status-1', 'status-2', 'status-3', 'status-4'),
 	})
+
+	Category.associate = () => {}
+
+	return Category
 }

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('comment', {
+	const Comment = sequelize.define('comment', {
 		id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -9,14 +9,14 @@ module.exports = (sequelize, Sequelize) => {
 		userId: {
 			type: Sequelize.INTEGER,
 			references: {
-				model: 'user',
+				model: 'users',
 				key: 'id',
 			},
 		},
 		notificationId: {
 			type: Sequelize.INTEGER,
 			references: {
-				model: 'notification',
+				model: 'notifications',
 				key: 'id',
 			},
 		},
@@ -24,4 +24,12 @@ module.exports = (sequelize, Sequelize) => {
 		createDate: Sequelize.DATE,
 		modificationDate: Sequelize.DATE,
 	})
+
+	Comment.associate = database => {
+		Comment.belongsTo(database.User)
+		Comment.belongsTo(database.Notification)
+		Comment.hasMany(database.Subcomment)
+	}
+
+	return Comment
 }

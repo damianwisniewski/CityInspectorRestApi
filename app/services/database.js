@@ -21,7 +21,8 @@ switch (process.env.NODE_ENV) {
 		database.sync()
 		break
 	case 'DEVELOPMENT':
-		database.sync()
+		// database.sync()
+		database.sync({ force: true })
 		break
 	case 'TEST':
 		database.sync({ force: true })

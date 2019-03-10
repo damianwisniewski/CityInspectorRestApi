@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('user', {
+	const User = sequelize.define('user', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -10,14 +10,22 @@ module.exports = (sequelize, Sequelize) => {
 		surname: Sequelize.STRING,
 		nickname: Sequelize.STRING,
 		email: Sequelize.STRING,
-		password: {},
-		settingsId: {
-			type: Sequelize.INTEGER,
-			references: {
-				model: 'settings',
-				key: 'id',
-			},
-		},
 		createDate: Sequelize.DATE,
 	})
+
+	User.associate = model => {
+		User.belongsTo(model.Settings)
+		User.hasMany(model.Notification)
+		User.hasMany(model.Comment)
+		User.hasMany(model.Subcomment)
+		User.hasMany(model.Subscription)
+	}
+
+	User.createFakeData = amount => {
+		for (let i = 0; i < amount; i++) {
+			// User.createDate()
+		}
+	}
+
+	return User
 }

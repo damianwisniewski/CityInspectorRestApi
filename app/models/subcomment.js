@@ -1,20 +1,20 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('subcomment', {
+	const Subcomment = sequelize.define('subcomment', {
 		id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 			unique: 'compositeIndex',
 			defaultValue: Sequelize.UUIDV4,
 		},
-		commentId: {
-			type: Sequelize.INTEGER,
-			references: {
-				model: 'comment',
-				key: 'id',
-			},
-		},
 		text: Sequelize.TEXT,
 		createDate: Sequelize.DATE,
 		modificationDate: Sequelize.DATE,
 	})
+
+	Subcomment.associate = database => {
+		Subcomment.belongsTo(database.Comment)
+		Subcomment.belongsTo(database.User)
+	}
+
+	return Subcomment
 }

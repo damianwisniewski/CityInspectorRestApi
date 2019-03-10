@@ -1,20 +1,17 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('subscription', {
-		userId: {
+	const Subscription = sequelize.define('subscription', {
+		id: {
 			type: Sequelize.INTEGER,
+			autoIncrement: true,
 			allowNull: false,
-			references: {
-				model: 'user',
-				key: 'id',
-			},
-		},
-		notificationId: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			references: {
-				model: 'notification',
-				key: 'id',
-			},
+			primaryKey: true,
 		},
 	})
+
+	Subscription.associate = model => {
+		Subscription.belongsTo(model.User)
+		Subscription.belongsTo(model.Notification)
+	}
+
+	return Subscription
 }

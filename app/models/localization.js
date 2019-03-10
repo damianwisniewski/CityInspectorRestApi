@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('settings', {
+	const Localization = sequelize.define('localization', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -13,4 +13,10 @@ module.exports = (sequelize, Sequelize) => {
 		number: Sequelize.STRING,
 		post: Sequelize.STRING,
 	})
+
+	Localization.associate = database => {
+		Localization.hasOne(database.Notification)
+	}
+
+	return Localization
 }

@@ -1,8 +1,8 @@
 module.exports = (sequelize, Sequelize) => {
-	return sequelize.define('photos', {
+	const Photos = sequelize.define('photos', {
 		id: {
 			type: Sequelize.UUID,
-			defaultValue: Sequelize.UUIDV1,
+			defaultValue: Sequelize.UUIDV4,
 			allowNull: false,
 			primaryKey: true,
 		},
@@ -16,4 +16,10 @@ module.exports = (sequelize, Sequelize) => {
 		photo4: Sequelize.STRING,
 		photo5: Sequelize.STRING,
 	})
+
+	Photos.associate = database => {
+		Photos.hasOne(database.Notification)
+	}
+
+	return Photos
 }

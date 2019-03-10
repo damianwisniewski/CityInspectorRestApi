@@ -3,12 +3,15 @@ require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+// TODO: morgan npm
 
 const database = require('./services/database')
 const email = require('./services/email')
 const photoStorage = require('./services/photoStorage')
 
 const app = express()
+
+const db = require('./models/index')
 
 app.use(bodyParser.json()) // body parser for data type "application/json"
 app.use(
