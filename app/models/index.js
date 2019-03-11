@@ -1,14 +1,10 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../services/database')
 
-/**
- * DO NOT CHANGE ORDER !!!
- * Some tabels have foreign keys with refferences to others,
- * to use those referencess correctly some tables have to be created before others.
- */
 const User = require('./user')(sequelize, Sequelize)
 const Settings = require('./settings')(sequelize, Sequelize)
 const Category = require('./category')(sequelize, Sequelize)
+const Status = require('./category')(sequelize, Sequelize)
 const Localization = require('./localization')(sequelize, Sequelize)
 const Photos = require('./photos')(sequelize, Sequelize)
 const Notification = require('./notification')(sequelize, Sequelize)
@@ -20,6 +16,7 @@ const models = {
 	User,
 	Settings,
 	Category,
+	Status,
 	Localization,
 	Photos,
 	Notification,

@@ -25,10 +25,17 @@ module.exports = (sequelize, Sequelize) => {
 		modificationDate: Sequelize.DATE,
 	})
 
+	/**
+	 * Creates relations between tables.
+	 * Thanks to this kind of connections between tables, sequelize provides some extra functionalities.
+	 * http://docs.sequelizejs.com/manual/tutorial/associations.html#associating-objects
+	 * @param {Object} model - Object of sequelize data models.
+	 */
 	Comment.associate = database => {
 		Comment.belongsTo(database.User)
 		Comment.belongsTo(database.Notification)
-		Comment.hasMany(database.Subcomment)
+		Comment.hasMany(database.Comment, { as: 'Subcomment' })
+		Comment.belongsTo(database.Comment)
 	}
 
 	return Comment

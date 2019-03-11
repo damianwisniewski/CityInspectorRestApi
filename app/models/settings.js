@@ -18,6 +18,12 @@ module.exports = (sequelize, Sequelize) => {
 		},
 	})
 
+	/**
+	 * Creates relations between tables.
+	 * Thanks to this kind of connections between tables, sequelize provides some extra functionalities.
+	 * http://docs.sequelizejs.com/manual/tutorial/associations.html#associating-objects
+	 * @param {Object} model - Object of sequelize data models.
+	 */
 	Settings.associate = database => {
 		Settings.hasMany(database.User)
 	}

@@ -1,11 +1,12 @@
 module.exports = (sequelize, Sequelize) => {
-	const Subscription = sequelize.define('subscription', {
+	const Status = sequelize.define('status', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			allowNull: false,
 			primaryKey: true,
 		},
+		name: Sequelize.STRING,
 	})
 
 	/**
@@ -14,10 +15,9 @@ module.exports = (sequelize, Sequelize) => {
 	 * http://docs.sequelizejs.com/manual/tutorial/associations.html#associating-objects
 	 * @param {Object} model - Object of sequelize data models.
 	 */
-	Subscription.associate = model => {
-		Subscription.belongsTo(model.User)
-		Subscription.belongsTo(model.Notification)
+	Status.associate = model => {
+		Status.hasMany(model.Notification)
 	}
 
-	return Subscription
+	return Status
 }

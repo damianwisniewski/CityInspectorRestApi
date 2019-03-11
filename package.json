@@ -26,14 +26,14 @@
 		}
 	},
 	"nyc": {
-    "include": [
-      "app/**/*.js"
-    ],
-    "exclude": [
-      "tests/**/*.test.js"
-    ],
-    "all": true
-  },
+		"include": [
+			"app/**/*.js"
+		],
+		"exclude": [
+			"tests/**/*.test.js"
+		],
+		"all": true
+	},
 	"devDependencies": {
 		"chai": "^4.2.0",
 		"chai-http": "^4.2.1",
@@ -52,6 +52,7 @@
 		"dotenv": "^6.2.0",
 		"express": "^4.16.4",
 		"express-validator": "^5.3.1",
+		"faker": "^4.1.0",
 		"jsonwebtoken": "^8.5.0",
 		"mysql2": "^1.6.5",
 		"nodemailer": "^5.1.1",
