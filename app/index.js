@@ -11,7 +11,7 @@ const photoStorage = require('./services/photoStorage')
 
 const app = express()
 
-const db = require('./models/index')
+const db = require('./database/models/index')
 
 app.use(bodyParser.json()) // body parser for data type "application/json"
 app.use(
