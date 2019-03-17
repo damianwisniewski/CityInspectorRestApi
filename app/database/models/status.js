@@ -1,5 +1,5 @@
-module.exports = (sequelize, Sequelize) => {
-	const Status = sequelize.define('status', {
+module.exports = (queryInterface, Sequelize) => {
+	const Status = queryInterface.define('Status', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -17,6 +17,22 @@ module.exports = (sequelize, Sequelize) => {
 	 */
 	Status.associate = model => {
 		Status.hasMany(model.Notification)
+	}
+
+	/**
+	 * "Data dictionary" tables should keep some read-only data, to describe some content in a unified way.
+	 * Makes sure the table is filled with specified data, if not, those data will be created.
+	 */
+	Status.createDictionaryValues = () => {
+		const defaultValues = ['test1', 'test2', 'test3']
+
+		defaultValues.forEach(value => {
+			Status.findOrCreate({
+				where: {
+					name: value,
+				},
+			})
+		})
 	}
 
 	return Status

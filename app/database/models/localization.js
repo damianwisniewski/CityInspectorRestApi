@@ -1,5 +1,5 @@
-module.exports = (sequelize, Sequelize) => {
-	const Localization = sequelize.define('localization', {
+module.exports = (queryInterface, Sequelize) => {
+	const Localization = queryInterface.define('Localization', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,

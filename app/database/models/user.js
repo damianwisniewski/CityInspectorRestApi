@@ -1,7 +1,5 @@
-const faker = require('faker/locale/pl')
-
-module.exports = (sequelize, Sequelize) => {
-	const User = sequelize.define('user', {
+module.exports = (queryInterface, Sequelize) => {
+	const User = queryInterface.define('User', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -14,8 +12,18 @@ module.exports = (sequelize, Sequelize) => {
 		nickname: Sequelize.STRING,
 		email: Sequelize.STRING,
 		password: {
-			type: Sequelize.STRING,
+			type: Sequelize.INTEGER,
+			allowNull: true,
+		},
+		privateData: {
+			type: Sequelize.ENUM('Y', 'N'),
 			allowNull: false,
+			defaultValue: 'Y',
+		},
+		emailAgreement: {
+			type: Sequelize.ENUM('Y', 'N'),
+			allowNull: false,
+			defaultValue: 'N',
 		},
 	})
 
@@ -26,10 +34,8 @@ module.exports = (sequelize, Sequelize) => {
 	 * @param {Object} model - Object of sequelize data models.
 	 */
 	User.associate = model => {
-		User.belongsTo(model.Settings)
 		User.hasMany(model.Notification)
 		User.hasMany(model.Comment)
-		User.hasMany(model.Subcomment)
 		User.hasMany(model.Subscription)
 	}
 
@@ -37,24 +43,36 @@ module.exports = (sequelize, Sequelize) => {
 	 * Generates fake data
 	 * @param {number} amount - number of fake data rows to generate
 	 */
-	User.createFakeData = amount => {
-		const data = []
-
-		for (let i = 0; i < amount; i++) {
-			data.push({
-				name: faker.name.firstName(),
-				surname: faker.name.lastName(),
-				nickname: faker.internet.userName(),
-				email: faker.internet.email(null, null, 'example.com'),
-			})
-		}
-
-		User.bulkCreate(data)
-			.then(() => {
-				console.log('działa')
-			})
-			.catch(err => console.log(err))
-	}
+	// User.createFakeData = (amount = 10) => {
+	// const data = []
+	// for (let i = 0; i < amount; i++) {
+	// data.push({
+	// User.create(
+	// 	{
+	// 		name: faker.name.firstName(),
+	// 		surname: faker.name.lastName(),
+	// 		nickname: faker.internet.userName(),
+	// 		email: faker.internet.email(null, null, 'example.com'),
+	// 		Settings: {
+	// 			privateData: 'Y',
+	// 			emailAgreement: 'N',
+	// 		},
+	// 	},
+	// 	{
+	// 		include: ['Settings'],
+	// 	}
+	// )
+	// 	.then(() => {
+	// 		console.log('działa')
+	// 	})
+	// 	.catch(err => console.log(err))
+	// }
+	// User.bulkCreate()
+	// 	.then(() => {
+	// 		console.log('działa')
+	// 	})
+	// 	.catch(err => console.log(err))
+	// }
 
 	return User
 }

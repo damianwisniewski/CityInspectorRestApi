@@ -14,20 +14,20 @@ const db = {}
 if (env === 'PRODUCTION') {
 	// prodDatabase
 	// devDatabase
-	db.sequelize = new Sequelize({
+	db.queryInterface = new Sequelize({
 		...config,
 		operatorsAliases: false,
 	})
 } else if (env === 'TEST') {
 	// local development database
-	db.sequelize = new Sequelize(config)
+	db.queryInterface = new Sequelize(config)
 } else {
 	// local test database
-	db.sequelize = new Sequelize(config)
+	db.queryInterface = new Sequelize(config)
 }
 
 module.exports = {
 	Sequelize,
 	...db,
-	models: models(db.sequelize, Sequelize),
+	models: models(db.queryInterface, Sequelize),
 }

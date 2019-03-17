@@ -1,5 +1,10 @@
-module.exports = (sequelize, Sequelize) => {
-	const Category = sequelize.define('category', {
+/**
+ * @param {string} queryInterface
+ * @param {Sequelize} Sequelize
+ * @returns {Sequelize.Model} Category
+ */
+module.exports = (queryInterface, Sequelize) => {
+	const Category = queryInterface.define('Category', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -19,5 +24,20 @@ module.exports = (sequelize, Sequelize) => {
 		Category.hasMany(model.Notification)
 	}
 
+	/**
+	 * "Data dictionary" tables should keep some read-only data, to describe some content in a unified way.
+	 * Makes sure the table is filled with specified data, if not, those data will be created.
+	 */
+	Category.createDictionaryValues = () => {
+		const defaultValues = ['test1', 'test2', 'test3']
+
+		defaultValues.forEach(value => {
+			Category.findOrCreate({
+				where: {
+					name: value,
+				},
+			})
+		})
+	}
 	return Category
 }

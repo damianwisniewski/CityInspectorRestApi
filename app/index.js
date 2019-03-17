@@ -5,13 +5,12 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 // TODO: morgan npm
 
-const database = require('./services/database')
 const email = require('./services/email')
 const photoStorage = require('./services/photoStorage')
 
 const app = express()
 
-const db = require('./database/models/index')
+const db = require('./database/index')
 
 app.use(bodyParser.json()) // body parser for data type "application/json"
 app.use(
@@ -28,13 +27,13 @@ app.use(
  * In another case, when a connection with some service failed, the server will be closed.
  */
 Promise.all([
-	database.authenticate(),
-	photoStorage.verify(),
-	email.transporter.verify(),
+	db.sequelize.authenticate(),
+	// photoStorage.verify(),
+	// email.transporter.verify(),
 ])
 	.then(() => {
 		console.log('\nServices connections has been established successfully. \n')
-
+		db.sequelize.sync()
 		app.listen(process.env.PORT || 8080, () => {
 			console.log('Server is listening on port: ', process.env.PORT || 8080)
 		})
