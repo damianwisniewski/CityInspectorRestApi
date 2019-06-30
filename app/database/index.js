@@ -1,9 +1,32 @@
-// const fs = require('fs')
-// const path = require('path')
-const Sequelize = require('sequelize')
-
+const fs = require('fs')
+const path = require('path')
 const env = process.env.NODE_ENV || 'development'
-const config = require('../../config/database-config.js')[env]
+const config = require('../../config/database-config.js')[env.toLowerCase()]
+
+const Sequelize = require('sequelize')
+const sequelize = new Sequelize(config)
+const models = {}
+
+/**
+ * Gets all model files names from model directory and inits them
+ */
+fs.readdirSync(`${__dirname}/models`).forEach(file => {
+	const model = require(path.join(`${__dirname}/models/${file}`))
+	models[model.name] = model.init(sequelize, Sequelize)
+})
+
+/**
+ * Creates associations between models and fills dictionary tables with proper values
+ */
+Object.keys(models).forEach(model => {
+	if (model.associate) {
+		model.associate(models)
+	}
+	if (model.createDefaultValues) {
+		model.createDictionaryValues()
+	}
+})
+
 
 /**
  * @typedef {Object} Database
@@ -23,40 +46,8 @@ const config = require('../../config/database-config.js')[env]
 /**
  * @type {Database}
  */
-const db = {
+module.exports = {
 	Sequelize,
-	sequelize: new Sequelize(config),
-	models: {
-		Category: db.sequelize.import('./models/Category'),
-		Comment: db.sequelize.import('./models/Comment'),
-		Localization: db.sequelize.import('./models/Localization'),
-		Notification: db.sequelize.import('./models/Notification'),
-		Photos: db.sequelize.import('./models/Photos'),
-		Status: db.sequelize.import('./models/Status'),
-		Subscription: db.sequelize.import('./models/Subscription'),
-		User: db.sequelize.import('./models/User'),
-	},
+	sequelize,
+	models,
 }
-
-// /**
-//  * Gets all model files names from model directory.
-//  *
-//  */
-// fs.readdirSync(`${__dirname}/models`).forEach(file => {
-// 	const model = db.sequelize['import'](path.join(`${__dirname}/models`, file))
-// 	db.models[model.name] = model
-// })
-
-/**
- * Creates associations between models and fills dictionary tables with proper values
- */
-db.models.forEach(model => {
-	if (model.associate) {
-		model.associate(db)
-	}
-	if (model.createDefaultValues) {
-		model.createDictionaryValues()
-	}
-})
-
-module.exports = db

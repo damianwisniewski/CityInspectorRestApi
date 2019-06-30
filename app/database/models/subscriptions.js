@@ -1,12 +1,17 @@
-module.exports = (queryInterface, Sequelize) => {
-	const Subscription = queryInterface.define('Subscription', {
-		id: {
-			type: Sequelize.INTEGER,
-			autoIncrement: true,
-			allowNull: false,
-			primaryKey: true,
+const { Model } = require('sequelize')
+module.exports = class Subscriptions extends Model {
+	static init(sequelize, DataTypes) {
+		return super.init({
+			id: {
+				type: DataTypes.INTEGER,
+				autoIncrement: true,
+				allowNull: false,
+				primaryKey: true,
+			}
 		},
-	})
-
-	return Subscription
+			{
+				sequelize,
+				modelName: 'Subscriptions'
+			})
+	}
 }

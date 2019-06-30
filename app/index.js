@@ -34,6 +34,31 @@ Promise.all([
 	.then(() => {
 		console.log('\nServices connections has been established successfully. \n')
 		db.sequelize.sync()
+		// setTimeout(() => {
+		// 	db.models.User.generateHash('sssssss').then(hashed => {
+		// 		console.warn(hashed)
+
+		// 		db.models.User.create({
+		// 			name: 'dom',
+		// 			surname: 'test',
+		// 			gender: 'M',
+		// 			nickname: 'nic',
+		// 			email: 'dada@ooo.pl',
+		// 			password: hashed,
+		// 			privateData: 'N',
+		// 			emailAgreement: 'N'
+		// 		})
+		// 	})
+		// }, 5000)
+
+		setTimeout(() => {
+			db.models.User.findByPk(1).then(user => {
+				user.validPassword('sssssss').then(isValid => {
+					console.log('isValid ', isValid)
+				})
+			})
+		}, 5000)
+
 		app.listen(process.env.PORT || 8080, () => {
 			console.log('Server is listening on port: ', process.env.PORT || 8080)
 		})
