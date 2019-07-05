@@ -1,5 +1,6 @@
 const { Model } = require('sequelize')
-module.exports = class Localization extends Model {
+
+module.exports = class Photo extends Model {
 	static init(sequelize, DataTypes) {
 		return super.init({
 			id: {
@@ -8,48 +9,44 @@ module.exports = class Localization extends Model {
 				allowNull: false,
 				primaryKey: true,
 			},
-			lat: {
-				type: DataTypes.FLOAT,
+			location: {
+				type: DataTypes.STRING,
 				allowNull: false,
-				validate: {
-					isFloat: true
-				}
 			},
-			lan: {
-				type: DataTypes.FLOAT,
-				allowNull: false,
-				validate: {
-					isFloat: true
-				}
-			},
-			city: {
+			photo1: {
 				type: DataTypes.STRING,
 				validate: {
-					is: /[\da-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż-]/g,
+					isUrl: true,
 				}
 			},
-			street: {
+			photo2: {
 				type: DataTypes.STRING,
 				validate: {
-					is: /[\da-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż-]/g,
+					isUrl: true,
 				}
 			},
-			number: {
+			photo3: {
 				type: DataTypes.STRING,
 				validate: {
-					isAlphanumeric: true
+					isUrl: true,
 				}
 			},
-			post: {
+			photo4: {
 				type: DataTypes.STRING,
 				validate: {
-					is: /\d{2}-\d{3}/g
+					isUrl: true,
+				}
+			},
+			photo5: {
+				type: DataTypes.STRING,
+				validate: {
+					isUrl: true,
 				}
 			},
 		},
 			{
 				sequelize,
-				modelName: 'Localization'
+				modelName: 'Photos'
 			})
 	}
 }

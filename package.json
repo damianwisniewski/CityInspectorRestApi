@@ -11,15 +11,13 @@
 		"url": "git+https://github.com/damianwisniewski/CityInspectorRestApi.git"
 	},
 	"scripts": {
-		"db-migrate": "cross-env NODE_ENV=development sequelize db:migrate",
 		"start": "cross-env NODE_ENV=PRODUCTION node app/index.js",
 		"start:dev": "cross-env NODE_ENV=DEVELOPMENT nodemon app/index.js",
-		"test": "npm run test:unit && npm run test:endpoint",
+		"test": "cross-env NODE_ENV=DEVELOPMENT mocha \"./{,!(node_modules)/**/}*.test.js\"",
 		"test:coverage": "nyc report",
-		"test:unit": "cross-env NODE_ENV=TEST nyc mocha tests/units/**/*.test.js",
-		"test:endpoint": "cross-env NODE_ENV=TEST mocha tests/endpoints/**/*.test.js",
 		"lint": "eslint **/*",
-		"release": ""
+		"release": "",
+		"fake-data": "node scripts/fill_fake_database.js"
 	},
 	"husky": {
 		"hooks": {
@@ -44,7 +42,9 @@
 		"mocha": "^6.0.2",
 		"nodemon": "^1.18.10",
 		"nyc": "^13.3.0",
-		"prettier": "1.16.4"
+		"prettier": "1.16.4",
+		"sequelize-test-helpers": "^1.1.2",
+		"sinon": "^7.3.2"
 	},
 	"dependencies": {
 		"bcrypt": "^3.0.6",
@@ -55,7 +55,8 @@
 		"express": "^4.16.4",
 		"express-validator": "^5.3.1",
 		"faker": "^4.1.0",
-		"jsonwebtoken": "^8.5.0",
+		"helmet": "^3.18.0",
+		"jsonwebtoken": "^8.5.1",
 		"mysql2": "^1.6.5",
 		"nodemailer": "^5.1.1",
 		"sequelize": "^5.8.12",

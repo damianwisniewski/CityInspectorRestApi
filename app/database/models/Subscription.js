@@ -1,5 +1,6 @@
 const { Model } = require('sequelize')
-module.exports = class Subscriptions extends Model {
+
+module.exports = class Subscription extends Model {
 	static init(sequelize, DataTypes) {
 		return super.init({
 			id: {
@@ -11,7 +12,11 @@ module.exports = class Subscriptions extends Model {
 		},
 			{
 				sequelize,
-				modelName: 'Subscriptions'
+				modelName: 'Subscription'
 			})
+	}
+
+	static associate(models) {
+		Subscription.belongsTo(models.Notification)
 	}
 }

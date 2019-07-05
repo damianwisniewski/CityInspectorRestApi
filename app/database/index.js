@@ -19,11 +19,13 @@ fs.readdirSync(`${__dirname}/models`).forEach(file => {
  * Creates associations between models and fills dictionary tables with proper values
  */
 Object.keys(models).forEach(model => {
-	if (model.associate) {
-		model.associate(models)
+	const dbModel = models[model]
+
+	if (dbModel.associate) {
+		dbModel.associate(models)
 	}
-	if (model.createDefaultValues) {
-		model.createDictionaryValues()
+	if (dbModel.createDictionaryValues) {
+		dbModel.createDictionaryValues()
 	}
 })
 
@@ -37,7 +39,7 @@ Object.keys(models).forEach(model => {
  * @property {Sequelize.Model} Database.models.Comment - Database model (SQL Table)
  * @property {Sequelize.Model} Database.models.Localization - Database model (SQL Table)
  * @property {Sequelize.Model} Database.models.Notification - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Photos - Database model (SQL Table)
+ * @property {Sequelize.Model} Database.models.Photo - Database model (SQL Table)
  * @property {Sequelize.Model} Database.models.Status - Database model (SQL Table)
  * @property {Sequelize.Model} Database.models.Subscription - Database model (SQL Table)
  * @property {Sequelize.Model} Database.models.User - Database model (SQL Table)
