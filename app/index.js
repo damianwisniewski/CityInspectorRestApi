@@ -11,17 +11,7 @@ const photoStorage = require('./services/photoStorage')
 
 const routing = require('./routes')
 const app = express()
-// const db = require('./database/index')
-
-const webTocken = require('./services/jwtService')
-
-const token = webTocken.create({ a: 'siema' })
-console.log(token)
-
-setTimeout(() =>
-	console.log(
-		webTocken.validate(token)
-	), 2000)
+const db = require('./models')
 
 app.use(helmet({
 	noSniff: true,
@@ -34,7 +24,7 @@ app.use(helmet({
 
 app.use(
 	cors({
-		origin: '*',
+		origin: ['http://localhost:8888', 'http://127.0.0.1:5500'],
 		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 		allowedHeaders: ['Content-Type', 'Autorization'],
 	})
@@ -48,7 +38,7 @@ app.use(routing)
  * Error Handler, catches errors passed by 'next(error)'
  * and sends them in response
  */
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
 	res.status(err.status).json({ message: err.message })
 })
 
@@ -64,7 +54,7 @@ Promise.all([
 ])
 	.then(() => {
 		console.log('\nServices connections has been established successfully. \n')
-		// db.sequelize.sync()
+		db.sequelize.sync()
 
 		app.listen(process.env.PORT || 8080, () => {
 			console.log('Server is listening on port: ', process.env.PORT || 8080)

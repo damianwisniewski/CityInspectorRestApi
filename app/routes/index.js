@@ -1,17 +1,14 @@
-const fs = require('fs')
-const path = require('path')
 const { Router } = require('express')
 const routing = Router()
 
-/**
- * Gets all routers files names from this directory and use them to main routing
- */
-fs.readdirSync(__dirname).forEach(file => {
-	if (file !== 'index.js') {
-		const router = require(path.join(`${__dirname}/${file}`))
+const userRouter = require('./user_routes')
+const notificationRouter = require('./notification_routes')
+const commentRouter = require('./comment_routes')
+const subscriptionRouter = require('./subscription_routes')
 
-		routing.use(router)
-	}
-})
+routing.use('/user', userRouter)
+routing.use('/notification', notificationRouter)
+routing.use('/comment', commentRouter)
+routing.use('/subscription', subscriptionRouter)
 
 module.exports = routing

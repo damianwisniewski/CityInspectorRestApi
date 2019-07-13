@@ -4,7 +4,7 @@
 		"node": true,
 		"mocha": true
 	},
-	"extends": "eslint:recommended",
+	"extends": ["eslint:recommended"],
 	"parserOptions": {
 		"ecmaVersion": 2018
 	},
@@ -14,6 +14,7 @@
 		"no-eval": "error",
 		"no-extend-native": "error",
 		"no-multi-str": "error",
+		"no-unused-vars": "off",
 		"no-var": "error",
 		"prefer-const": "error",
 		"no-console": "off",

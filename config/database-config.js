@@ -8,7 +8,7 @@ module.exports = {
 		port: process.env.DATABASE_PORT_PRODUCTION,
 		host: 'localhost',
 		dialect: 'mysql',
-		operatorsAliases: false,
+		logging: false
 	},
 	test: {
 		username: process.env.DATABASE_USER_NAME_PRODUCTION,
@@ -17,7 +17,6 @@ module.exports = {
 		port: process.env.DATABASE_PORT_PRODUCTION,
 		host: 'localhost',
 		dialect: 'mysql',
-		operatorsAliases: false,
 	},
 	production: {
 		username: process.env.DATABASE_USER_NAME_PRODUCTION,
@@ -26,6 +25,5 @@ module.exports = {
 		port: process.env.DATABASE_PORT_PRODUCTION,
 		host: 'localhost',
 		dialect: 'mysql',
-		operatorsAliases: false,
 	},
 }

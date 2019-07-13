@@ -7,11 +7,17 @@
 		<title>Document</title>
 	</head>
 	<body>
-		<p>sd</p>
 		<script>
-			fetch('http://localhost:8080/get', { method: 'POST' }).then(e =>
-				console.log(e)
-			)
+			fetch('http://localhost:8080/user/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					email: 'sasda',
+					password: 'w232',
+				}),
+			})
 		</script>
 	</body>
 </html>

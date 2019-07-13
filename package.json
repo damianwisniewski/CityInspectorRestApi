@@ -12,7 +12,7 @@
 	},
 	"scripts": {
 		"start": "cross-env NODE_ENV=PRODUCTION node app/index.js",
-		"start:dev": "cross-env NODE_ENV=DEVELOPMENT nodemon app/index.js",
+		"start:dev": "cross-env NODE_ENV=DEVELOPMENT nodemon -- --inspect=0.0.0.0:9229 app/index.js",
 		"test": "cross-env NODE_ENV=DEVELOPMENT mocha \"./{,!(node_modules)/**/}*.test.js\"",
 		"test:coverage": "nyc report",
 		"lint": "eslint **/*",
@@ -44,7 +44,8 @@
 		"nyc": "^13.3.0",
 		"prettier": "1.16.4",
 		"sequelize-test-helpers": "^1.1.2",
-		"sinon": "^7.3.2"
+		"sinon": "^7.3.2",
+		"sinon-chai": "^3.3.0"
 	},
 	"dependencies": {
 		"bcrypt": "^3.0.6",
