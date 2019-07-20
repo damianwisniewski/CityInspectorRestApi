@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 const uuid = require('uuid/v1')
-
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
+const { JWT_SECRET_KEY } = require('../config')
 
 module.exports = {
 	/**
@@ -66,7 +65,7 @@ module.exports = {
 
 			tokenPayload = payload
 
-			if (jti !== refresh.tokenId) throw { message: 'invalid token' }
+			if (jti !== refresh.tokenId) throw { status: 401, message: 'invalid token' }
 
 		} catch (err) {
 			throw { status: 401, message: err.message }
