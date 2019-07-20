@@ -1,27 +1,28 @@
-const webToken = require('./jwtService')
+const webToken = require('./jwt_service')
 const { models } = require('../models')
 
 module.exports = (req, res, next) => {
 	try {
 		const { authorization } = req.headers
 
-		if (authorization && typeof authorization === 'string') {
+		if (authorization) {
 			const token = authorization.split(' ')[1]
 			const { userId, email } = webToken.validate(token)
 
-			models.User.findByPk(userId).then(user => {
-				if (user.email !== email) throw null
+			models.User.findByPk(userId)
+				.then(user => {
+					if (user.email !== email) throw null
 
-				req.locals = {
-					user,
-					authorization: {
-						token,
-						userId,
+					req.locals = {
+						user,
+						authorization: {
+							token,
+							userId,
+						}
 					}
-				}
 
-				next()
-			})
+					next()
+				})
 				.catch(() => {
 					next({ status: 403, message: 'You have no permission!' })
 				})
