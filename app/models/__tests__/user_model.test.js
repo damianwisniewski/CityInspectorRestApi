@@ -155,10 +155,10 @@ describe('User database model', () => {
 
 	})
 
-	context('Static method - generateHash', () => {
+	context('Static method - generateDataHash', () => {
 		it('should return hashed passpord string', async () => {
 			const passport = 'some_fake_passpoword'
-			const hashedPassport = await User.generateHash(passport)
+			const hashedPassport = await User.generateDataHash(passport)
 
 			expect(hashedPassport)
 				.to.be.a('string')
@@ -169,7 +169,7 @@ describe('User database model', () => {
 		})
 	})
 
-	context('Created instance\'s method validatePassword', () => {
+	context('Created instance\'s method validateDataHash', () => {
 		let UserInstance
 
 		before(async () => {
@@ -189,13 +189,13 @@ describe('User database model', () => {
 		})
 
 		it('should return true for correct password', async () => {
-			const validityResult = await UserInstance.validatePassword('ssssdsfsdsdsd')
+			const validityResult = await UserInstance.validateDataHash('ssssdsfsdsdsd')
 
 			expect(validityResult).to.be.true
 		})
 
 		it('should return false for incorrect password', async () => {
-			const validityResult = await UserInstance.validatePassword('ssssdsfs')
+			const validityResult = await UserInstance.validateDataHash('ssssdsfs')
 
 			expect(validityResult).to.be.false
 		})

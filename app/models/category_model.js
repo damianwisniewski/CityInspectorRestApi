@@ -1,8 +1,7 @@
 const { Model } = require('sequelize')
-
-module.exports = class Status extends Model {
+module.exports = class Category extends Model {
 	static get dictionaryValues() {
-		return ['zgłoszone', 'zrealizowane', 'w realizacji']
+		return ['niebezpieczne miejsca', 'uszkodzenia', 'zaniedbana zieleń', 'zanieczyszczona przestrzeń']
 	}
 
 	static init(sequelize, DataTypes) {
@@ -21,17 +20,17 @@ module.exports = class Status extends Model {
 		},
 			{
 				sequelize,
-				modelName: 'Status'
+				modelName: 'Category'
 			})
 	}
 
-	static associate(model) {
-		Status.hasMany(model.Notification)
+	static associate(models) {
+		Category.hasMany(models.Notification, { onDelete: 'RESTRICT', onUpdate: 'NO ACTION' })
 	}
 
 	static createDictionaryValues() {
-		Status.dictionaryValues.forEach(value => {
-			Status.findOrCreate({
+		Category.dictionaryValues.forEach(value => {
+			Category.findOrCreate({
 				where: {
 					name: value,
 				},

@@ -1,15 +1,11 @@
-require('dotenv').config()
-const PRODUCTION = process.env.NODE_ENV === 'PRODUCTION'
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const cors = require('cors')
 
-const email = require('./services/email')
-const photoStorage = require('./services/photoStorage')
-
 const routing = require('./routes')
+
+const envType = process.env.NODE_ENV || 'DEVELOPMENT'
 const app = express()
 const db = require('./models')
 
@@ -17,7 +13,7 @@ app.use(helmet({
 	noSniff: true,
 	xssFilter: false,
 	noCache: true,
-	hsts: { force: PRODUCTION },
+	hsts: { force: envType === 'PRODUCTION' },
 	hidePoweredBy: true,
 	frameguard: false,
 }))

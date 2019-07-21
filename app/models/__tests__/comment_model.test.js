@@ -31,12 +31,12 @@ describe('Comment database model', () => {
 		})
 
 		it(`with model Notification`, () => {
-			expect(Comment.belongsTo).to.have.been.calledWithExactly(Notification)
+			expect(Comment.belongsTo).to.have.been.calledWithExactly(Notification, { onDelete: "CASCADE", onUpdate: "NO ACTION" })
 		})
 
 
 		it(`with model other Comment as Subcomment`, () => {
-			expect(Comment.hasMany).to.have.been.calledWithExactly(Comment, { as: 'Subcomment' })
+			expect(Comment.hasMany).to.have.been.calledWithExactly(Comment, { as: 'Subcomment', onDelete: "CASCADE", onUpdate: "NO ACTION" })
 		})
 	})
 })

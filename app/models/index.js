@@ -1,18 +1,21 @@
 const fs = require('fs')
 const path = require('path')
-const env = process.env.NODE_ENV || 'development'
-const config = require('../../config/database-config.js')[env.toLowerCase()]
+const { DATABASE_CONFIG } = require('../config')
 
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize(config)
+const sequelize = new Sequelize(DATABASE_CONFIG)
 
 const models = {}
 
 /**
  * Gets all model files names from model directory and inits them
  */
-fs.readdirSync(`${__dirname}/database`).forEach(file => {
-	const model = require(path.join(`${__dirname}/database/${file}`))
+fs.readdirSync(__dirname).forEach(file => {
+	if (file === 'index.js' || file === '__tests__') {
+		return
+	}
+
+	const model = require(path.join(`${__dirname}/${file}`))
 	models[model.name] = model.init(sequelize, Sequelize)
 })
 

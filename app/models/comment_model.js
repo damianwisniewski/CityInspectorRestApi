@@ -22,7 +22,7 @@ module.exports = class Comment extends Model {
 	}
 
 	static associate(models) {
-		Comment.hasMany(models.Comment, { as: 'Subcomment' })
-		Comment.belongsTo(models.Notification)
+		Comment.hasMany(models.Comment, { as: 'Subcomment', onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
+		Comment.belongsTo(models.Notification, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
 	}
 }

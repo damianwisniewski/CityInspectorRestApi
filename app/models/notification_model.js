@@ -32,7 +32,7 @@ module.exports = class Notification extends Model {
 	}
 
 	static associate(models) {
-		Notification.belongsTo(models.Photo)
-		Notification.belongsTo(models.Localization)
+		Notification.belongsTo(models.Photo, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
+		Notification.belongsTo(models.Localization, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
 	}
 }
