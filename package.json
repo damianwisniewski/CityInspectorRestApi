@@ -11,13 +11,16 @@
 		"url": "git+https://github.com/damianwisniewski/CityInspectorRestApi.git"
 	},
 	"scripts": {
-		"start": "cross-env NODE_ENV=PRODUCTION node app/index.js",
-		"start:dev": "cross-env NODE_ENV=DEVELOPMENT nodemon -- --inspect=0.0.0.0:9229 app/index.js",
-		"test": "cross-env NODE_ENV=DEVELOPMENT mocha \"./{,!(node_modules)/**/}*.test.js\"",
+		"run-server": "cross-env NODE_ENV=PRODUCTION node app/index.js",
+		"start": "nodemon --inspect=0.0.0.0:9229 app/index.js",
+		"db-sync": "node scripts/sync_database.js",
+		"db-sync:force": "node scripts/sync_database.js --force",
+		"db-fill": "node scripts/fill_database.js",
+		"test": "npm run db-sync:force && npm run db-fill && mocha \"./{,!(node_modules)/**/}*.test.js\"",
+		"test:watch": "npm test -- --watch",
 		"test:coverage": "nyc report",
 		"lint": "eslint **/*",
-		"release": "",
-		"fake-data": "node scripts/fill_fake_database.js"
+		"release": ""
 	},
 	"husky": {
 		"hooks": {
@@ -45,23 +48,23 @@
 		"prettier": "1.16.4",
 		"sequelize-test-helpers": "^1.1.2",
 		"sinon": "^7.3.2",
-		"sinon-chai": "^3.3.0"
+		"sinon-chai": "^3.3.0",
+		"sequelize-cli": "^5.4.0",
+		"chalk": "^2.4.2",
+		"faker": "^4.1.0"
 	},
 	"dependencies": {
-		"bcrypt": "^3.0.6",
 		"body-parser": "^1.18.3",
 		"cloudinary": "^1.13.2",
 		"cors": "^2.8.5",
 		"dotenv": "^6.2.0",
 		"express": "^4.16.4",
 		"express-validator": "^5.3.1",
-		"faker": "^4.1.0",
 		"helmet": "^3.18.0",
 		"jsonwebtoken": "^8.5.1",
 		"mysql2": "^1.6.5",
 		"nodemailer": "^5.1.1",
 		"sequelize": "^5.8.12",
-		"sequelize-cli": "^5.4.0",
 		"uuid": "^3.3.2"
 	}
 }
