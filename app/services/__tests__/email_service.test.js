@@ -47,8 +47,12 @@ describe('Email Service', () => {
 				done(new Error('sendMessage resolved, but it should reject because of no email adress to send'))
 			})
 			.catch(err => {
-				expect(err).to.be.a('string')
-				done()
+				try {
+					expect(err).to.be.a('string')
+					done()
+				} catch (err) {
+					done(err)
+				}
 			})
 	})
 
@@ -58,8 +62,12 @@ describe('Email Service', () => {
 				done(new Error('sendMessage resolved, but it should reject because of no messageParams'))
 			})
 			.catch(err => {
-				expect(err).to.be.a('string')
-				done()
+				try {
+					expect(err).to.be.a('string')
+					done()
+				} catch (err) {
+					done(err)
+				}
 			})
 	})
 

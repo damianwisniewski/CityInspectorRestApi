@@ -77,7 +77,6 @@ describe('JWT Service', () => {
 			expect(decryptedPayload).to.contains(payload)
 			done()
 		} catch (err) {
-			console.log(err)
 			done(new Error('validate should pass, but it thows error'))
 		}
 	})

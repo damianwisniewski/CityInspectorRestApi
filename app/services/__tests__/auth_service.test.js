@@ -31,10 +31,14 @@ describe('Auth service', () => {
 		}
 
 		const next = function () {
-			expect(arguments[0])
-				.to.include({ status: 403, message: 'You have no permission!' })
+			try {
+				expect(arguments[0])
+					.to.include({ status: 403, message: 'You have no permission!' })
 
-			done()
+				done()
+			} catch (err) {
+				done(err)
+			}
 		}
 
 		authService(reqWithNoToken, null, next)
@@ -48,11 +52,15 @@ describe('Auth service', () => {
 		}
 
 		const next = function () {
-			expect(arguments[0])
-				.to.include({ status: 401 })
-				.and.have.key('message')
+			try {
+				expect(arguments[0])
+					.to.include({ status: 401 })
+					.and.have.key('message')
 
-			done()
+				done()
+			} catch (err) {
+				done(err)
+			}
 		}
 
 		authService(reqWithNoToken, null, next)
@@ -66,9 +74,13 @@ describe('Auth service', () => {
 		}
 
 		const next = function () {
-			expect(arguments[0]).to.have.keys('status', 'message')
+			try {
+				expect(arguments[0]).to.have.keys('status', 'message')
 
-			done()
+				done()
+			} catch (err) {
+				done(err)
+			}
 		}
 
 		authService(reqWithNoToken, null, next)
@@ -82,12 +94,16 @@ describe('Auth service', () => {
 		}
 
 		const next = function () {
-			expect(arguments[0]).to.be.undefined
-			expect(reqWithNoToken.locals)
-				.to.be.an('object')
-				.and.have.keys('user', 'authorization')
+			try {
+				expect(arguments[0]).to.be.undefined
+				expect(reqWithNoToken.locals)
+					.to.be.an('object')
+					.and.have.keys('user', 'authorization')
 
-			done()
+				done()
+			} catch (err) {
+				done(err)
+			}
 		}
 
 		authService(reqWithNoToken, null, next)
