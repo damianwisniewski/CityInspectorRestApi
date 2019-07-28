@@ -1,6 +1,9 @@
 const webTocken = require('../services/jwt_service')
-const { models } = require('../models')
-const { includesParams } = require('../utils/helpers')
+const { Sequelize, models } = require('../models')
+const helpers = require('../utils/helpers')
+const mailClient = require('../services/email_service')
+
+const Op = Sequelize.Op;
 
 /**
  * Login controller
@@ -16,7 +19,7 @@ exports.login = (req, res, next) => {
 				userId = user.id
 				return user.validateDataHash(password)
 			} else {
-				next({ status: 403, message: 'Invalid auth data' })
+				throw { status: 403, message: 'Invalid auth data' }
 			}
 		})
 		.then(isValid => {
@@ -28,12 +31,11 @@ exports.login = (req, res, next) => {
 
 				res.status(200).json(authToken)
 			} else {
-				next({ status: 401, message: 'Invalid auth data' })
+				throw { status: 401, message: 'Invalid auth data' }
 			}
 		})
 		.catch(err => {
-			console.log(err)
-			next({ status: 403, message: 'Invalid auth data', body: err })
+			next(err)
 		})
 }
 
@@ -60,10 +62,12 @@ exports.logout = (req, res, next) => {
 exports.register = (req, res, next) => {
 	const requireParams = ['email', 'password', 'nickname', 'emailAgreement']
 
-	if (includesParams(req.body, requireParams)) {
-		models.User.create(req.body).catch(() => next({ status: 400, message: 'Invalid data types!' }))
+	if (helpers.includesParams(req.body, requireParams)) {
+		models.User.create(req.body)
+			.then(() => res.status(201).send())
+			.catch(() => next({ status: 400, message: 'Invalid data!' }))
 	} else {
-		next({ status: 400, message: 'You missed required body data' })
+		next({ status: 400, message: 'Missing data!' })
 	}
 }
 
@@ -127,61 +131,99 @@ exports.updateData = (req, res, next) => {
 		}
 	}
 
-	if (!Object.keys(updatedData).length) {
-		next({ status: 400, message: 'You did not pass any proper data to update!' })
+	if (Object.keys(updatedData).length) {
+		req.locals.user.update({
+			...updatedData
+		})
+			.then(() => {
+				res.status(200).send()
+			})
+			.catch(() => {
+				next({ status: 400, message: 'Invalid data!' })
+			})
+	} else {
+		next({ status: 400, message: 'Missing data!' })
 	}
-
-	req.locals.user.update({
-		...updatedData
-	})
-		.then(() => {
-			res.status(200).send()
-		})
-		.catch(() => {
-			next({ status: 400, message: 'You passed invalid data type to update!' })
-		})
 }
 
 /**
- * 
  * Initializes reset password process by send emial with prepared notification to reset password
  */
 exports.sendResetEmail = (req, res, next) => {
 	const resetEmail = req.body.email
 
-	if (!resetEmail) {
-		next({ status: 400, message: 'You did not pass email to reset password' })
+	if (resetEmail) {
+		models.User.findOne({ where: { email: resetEmail } })
+			.then(user => {
+				if (user) {
+					mailClient.sendMessage(user.email, {
+						nickname: user.nickname,
+						resetLink: `https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}`
+					})
+						.then(() => res.status(204).send())
+						.catch(() => next({ status: 503 }))
+
+				} else {
+					/**
+					 * We don't want to give information to potential attacker,
+					 * if email that was passed, is registered in database.
+					 */
+					res.status(204).send()
+				}
+			})
+			.catch(err => {
+				next({ status: 503 })
+			})
+	} else {
+		next({ status: 400, message: 'Missed data' })
 	}
 
-	// send email then resp status
+
 }
 
 /**
  * Changes password in database to new one
  */
 exports.resetPassword = (req, res, next) => {
-	const { resetToken, newPassword } = req.body
+	const { email, resetToken, newPassword } = req.body
 
-	if (!resetToken || !newPassword) {
-		next({ status: 400, message: 'Missing data!' })
+	if (!resetToken || !newPassword || !email) {
+		return next({ status: 400, message: 'Missing data!' })
 	}
 
-	models.User.findOne({ where: { resetToken } })
+	models.User.findOne({
+		where: {
+			[Op.and]: [{ email: email }, { resetPasswordToken: resetToken }]
+		}
+	})
 		.then(user => {
-			if (!user) {
-				next({ status: 404, message: 'Not found data to update!' })
+			if (user) {
+				user.update({
+					password: newPassword
+				})
+					.then(() => {
+						res.status(200).send()
+					})
+					.catch(() => {
+						throw { status: 401, message: 'Invalid data!' }
+					})
+			} else {
+				throw { status: 401, message: 'Invalid data!' }
 			}
-
-			req.locals.user.update({
-				password: newPassword
-			})
-				.then(() => {
-					res.status(200).send()
-				})
-				.catch(() => {
-					next({ status: 400, message: 'You passed invalid data type to update!' })
-				})
 		})
-		.catch(() => next({ status: 401, message: 'Invalid token!' }))
+		.catch((err) => next({ status: err.status, message: err.message }))
 
+}
+
+/**
+ * Delete user account
+ */
+exports.deleteUser = (req, res, next) => {
+	req.locals.user.destroy()
+		.then(() => {
+			res.status(204).send()
+		})
+		.catch(err => {
+			next({ status: 417, message: 'Delete request failed!' })
+		})
 }

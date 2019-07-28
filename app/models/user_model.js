@@ -76,7 +76,7 @@ module.exports = class User extends Model {
 								user.password = hashedPassword
 							}),
 
-							User.generateDataHash(user.email).then(resetPasswordToken => {
+							User.generateDataHash(user.email + Date.now()).then(resetPasswordToken => {
 								user.resetPasswordToken = resetPasswordToken
 							})
 						])
@@ -90,12 +90,43 @@ module.exports = class User extends Model {
 										user.password = hashedPassword
 									}),
 
-								User.generateDataHash(user.email).then(resetPasswordToken => {
+								User.generateDataHash(user.email + Date.now()).then(resetPasswordToken => {
 									user.resetPasswordToken = resetPasswordToken
 								})
 							]))
 						)
-					}
+					},
+
+					beforeUpdate: user => new Promise(resolve => {
+						const changes = user.changed()
+
+						if (changes) {
+							if (changes.includes('email')) {
+								User.generateDataHash(user.email + Date.now())
+									.then(resetPasswordToken => {
+										user.resetPasswordToken = resetPasswordToken
+										resolve()
+									})
+							} else if (changes.includes('password')) {
+								Promise.all([
+									User.generateDataHash(user.password)
+										.then(hashedPassword => {
+											user.password = hashedPassword
+										}),
+
+									User.generateDataHash(user.email + Date.now())
+										.then(resetPasswordToken => {
+											user.resetPasswordToken = resetPasswordToken
+										})
+								])
+									.then(resolve)
+							} else {
+								resolve()
+							}
+						} else {
+							resolve()
+						}
+					})
 				},
 				sequelize,
 				modelName: 'User'

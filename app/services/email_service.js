@@ -13,9 +13,9 @@ const emailTemplate = {
 	 */
 	text: ({ nickname, resetLink }) =>
 		'City Inspector\n\n' +
-		`Witaj ${nickname}!` +
-		'Wiadomość została wysłana ze względu na próbę zmiany hasła.' +
-		'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:' +
+		`Witaj ${nickname}!\n` +
+		'Wiadomość została wysłana ze względu na próbę zmiany hasła.\n' +
+		'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:\n' +
 		`${resetLink}`,
 
 	/**
@@ -75,6 +75,7 @@ module.exports = {
 			return this.mailClient.sendMail({
 				from: EMAIL_CLIENT_CONFIG.auth.user,
 				to,
+				subject: 'City inspector - zmiana hasła',
 				text: this.fillTemplate(messageParams, 'text'),
 				html: this.fillTemplate(messageParams, 'html')
 			})
