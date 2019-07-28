@@ -45,7 +45,7 @@ describe('User database model', () => {
 	})
 
 	context('has proper data validation of inserction data', () => {
-		afterEach(async () => {
+		beforeEach(async () => {
 			await User.destroy({
 				where: {
 					[Op.or]: [{ email: 'sadas@op.pl' }, { nickname: 'dafasd' }]
