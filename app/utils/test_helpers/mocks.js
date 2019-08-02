@@ -18,6 +18,7 @@ exports.modelMock = {
 	create: sinon.stub(),
 	findOne: sinon.stub(),
 	findAll: sinon.stub(),
+	findByPk: sinon.stub(),
 }
 
 /**

@@ -1,6 +1,6 @@
 const webTocken = require('../services/jwt_service')
 const { Sequelize, models } = require('../models')
-const helpers = require('../utils/helpers')
+const helpers = require('../utils/app_helpers/helpers')
 const mailClient = require('../services/email_service')
 
 const Op = Sequelize.Op;

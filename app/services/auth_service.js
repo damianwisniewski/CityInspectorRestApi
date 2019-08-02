@@ -11,26 +11,31 @@ module.exports = (req, res, next) => {
 
 			models.User.findByPk(userId)
 				.then(user => {
-					if (user.email !== email) throw null
-
-					req.locals = {
-						user,
-						authorization: {
-							token,
-							userId,
+					if (user.email === email) {
+						req.locals = {
+							user,
+							authorization: {
+								token,
+								userId,
+							}
 						}
-					}
 
-					next()
+						next()
+					} else {
+						return Promise.reject()
+					}
 				})
 				.catch(() => {
 					next({ status: 403, message: 'You have no permission!' })
 				})
 
 		} else {
-			next({ status: 403, message: 'You have no permission!' })
+			throw { status: 403, message: 'You have no permission!' }
 		}
 	} catch (err) {
-		next({ status: 401, message: err.message })
+		next({
+			status: err.status || 401,
+			message: err.message || 'Token expired!'
+		})
 	}
 }

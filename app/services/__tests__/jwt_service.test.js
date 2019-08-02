@@ -7,9 +7,13 @@ const webTokenService = require('../jwt_service')
 const { JWT_SECRET_KEY } = require('../../config')
 
 chai.use(sinonChai)
-const should = chai.should()
 
 describe('JWT Service', () => {
+
+	after(() => {
+		webTokenService.blacklist.clear()
+		clearInterval(webTokenService.loopInterval)
+	})
 
 	it('create - should return object with generated token, refresh token and expiresIn', async () => {
 		const inputData = {

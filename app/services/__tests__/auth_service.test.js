@@ -1,39 +1,48 @@
 const { expect, ...chai } = require('chai')
 const sinonChai = require('sinon-chai')
+const sinon = require('sinon')
 
-const webtoken = require('../jwt_service')
+const { modelMock, modelInstanceMock: user } = require('../../utils/test_helpers/mocks')
+const webToken = require('../jwt_service')
 const { models } = require('../../models')
 const authService = require('../auth_service')
 
 chai.use(sinonChai)
 
 describe('Auth service', () => {
+	const fakeUserData = {
+		id: 'id',
+		name: 'name',
+		surname: 'surname',
+		gender: 'gender',
+		city: 'city',
+		nickname: 'nickname',
+		email: 'email',
+		emailAgreement: 'emailAgreement',
+		resetPasswordToken: 'reset_token',
+	}
 
-	let testAccountData
-	let validToken
-	const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbW…E5In0.AFDNfYhG83H0ns596huFjy0L6-Ki4NHTy5Y1zldeeCA'
-	const invalidToken = webtoken.create({ fakeData: 'fake' })
-
-	before(async () => {
-		const testAccount = await models.User.findOne({ where: { email: 'test@example.org' } })
-
-		testAccountData = {
-			email: 'test@example.org',
-			userId: testAccount.id
-		}
-
-		validToken = webtoken.create(testAccountData).token
+	before(() => {
+		sinon.stub(models, 'User').value(modelMock)
+		sinon.stub(webToken, 'validate')
+		Object.assign(user, fakeUserData)
 	})
+
+	afterEach(() => sinon.reset())
+	after(() => sinon.restore())
 
 	it('should call next with error argument for MISSING token', (done) => {
 		const reqWithNoToken = {
 			headers: {}
 		}
 
-		const next = function () {
+		const next = function (args) {
 			try {
-				expect(arguments[0])
-					.to.include({ status: 403, message: 'You have no permission!' })
+				expect(args)
+					.to.be.deep.equal({
+						status: 403,
+						message: 'You have no permission!'
+					})
 
 				done()
 			} catch (err) {
@@ -44,18 +53,21 @@ describe('Auth service', () => {
 		authService(reqWithNoToken, null, next)
 	})
 
-	it('should call next with error argument for INVALID token', (done) => {
+	it('should call next with error argument for EXPIRED or INVALID token', (done) => {
 		const reqWithNoToken = {
 			headers: {
-				authorization: 'Bearer ' + invalidToken,
+				authorization: 'Bearer token',
 			}
 		}
 
-		const next = function () {
+		webToken.validate.throws(new Error())
+
+		const next = function (args) {
 			try {
-				expect(arguments[0])
-					.to.include({ status: 401 })
-					.and.have.key('message')
+				expect(args).to.be.deep.equal({
+					status: 401,
+					message: 'Token expired!'
+				})
 
 				done()
 			} catch (err) {
@@ -66,16 +78,26 @@ describe('Auth service', () => {
 		authService(reqWithNoToken, null, next)
 	})
 
-	it('should call next with error argument for EXPIRED token', (done) => {
+	it('should call next with error argument for INVALID data decoded from token', (done) => {
 		const reqWithNoToken = {
 			headers: {
-				authorization: 'Bearer ' + expiredToken,
+				authorization: 'Bearer token',
 			}
 		}
 
-		const next = function () {
+		webToken.validate.returns({
+			userId: 'differentId',
+			email: 'differentEmail'
+		})
+
+		models.User.findByPk.resolves(user)
+
+		const next = function (args) {
 			try {
-				expect(arguments[0]).to.have.keys('status', 'message')
+				expect(args).to.be.deep.equal({
+					status: 403,
+					message: 'You have no permission!'
+				})
 
 				done()
 			} catch (err) {
@@ -87,18 +109,31 @@ describe('Auth service', () => {
 	})
 
 	it('should call next with error argument for VALID token', (done) => {
+		const token = 'token'
 		const reqWithNoToken = {
 			headers: {
-				authorization: 'Bearer ' + validToken,
+				authorization: 'Bearer ' + token,
 			}
 		}
 
-		const next = function () {
+		webToken.validate.returns({
+			userId: fakeUserData.id,
+			email: fakeUserData.email
+		})
+
+		models.User.findByPk.resolves(user)
+
+		const next = function (args) {
 			try {
-				expect(arguments[0]).to.be.undefined
+				expect(args).to.be.undefined
 				expect(reqWithNoToken.locals)
-					.to.be.an('object')
-					.and.have.keys('user', 'authorization')
+					.to.be.deep.equal({
+						user: user,
+						authorization: {
+							token: token,
+							userId: fakeUserData.id,
+						}
+					})
 
 				done()
 			} catch (err) {

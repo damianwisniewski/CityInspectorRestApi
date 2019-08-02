@@ -6,7 +6,7 @@ const webTocken = require('../../services/jwt_service')
 const { login, register, logout, getData, deleteUser, resetPassword, updateData, refreshToken, sendResetEmail } = require('../user_controller')
 const { models } = require('../../models')
 const mailClient = require('../../services/email_service')
-const helpers = require('../../utils/helpers')
+const helpers = require('../../utils/app_helpers/helpers')
 
 chai.use(sinonChai)
 
@@ -113,7 +113,7 @@ describe('User Controller', () => {
 			const refreshTokenData = 'fake_refresh_token'
 
 			authReq.headers['token-refresh'] = refreshTokenData
-			sinon.stub(webTocken, 'revoke').callsFake(() => {})
+			sinon.stub(webTocken, 'revoke').callsFake(() => { })
 
 			res.send.callsFake(() => {
 				try {
@@ -126,7 +126,7 @@ describe('User Controller', () => {
 				webTocken.revoke.restore()
 			})
 
-			logout(authReq, res, () => {})
+			logout(authReq, res, () => { })
 		})
 
 		it('should pass error to error handler if token-refresh is missing in headers', (done) => {
@@ -149,7 +149,7 @@ describe('User Controller', () => {
 
 			const next = (errorObj) => {
 				try {
-					expect(errorObj).to.have.deep.equal ({ status: 400, message: 'Missing data!' })
+					expect(errorObj).to.have.deep.equal({ status: 400, message: 'Missing data!' })
 					done()
 				} catch (err) {
 					done(err)
@@ -167,7 +167,7 @@ describe('User Controller', () => {
 
 			const next = (errorObj) => {
 				try {
-					expect(errorObj).to.have.deep.equal ({ status: 400, message: 'Invalid data!' })
+					expect(errorObj).to.have.deep.equal({ status: 400, message: 'Invalid data!' })
 					done()
 				} catch (err) {
 					done(err)
@@ -192,7 +192,7 @@ describe('User Controller', () => {
 				}
 			})
 
-			register(authReq, res, () => {})
+			register(authReq, res, () => { })
 		})
 	})
 
@@ -212,19 +212,19 @@ describe('User Controller', () => {
 
 		it('should pass error to error handler, if tokens are invalid', (done) => {
 			authReq.headers['token-refresh'] = 'fake_refresh_token'
-			sinon.stub(webTocken, 'refresh').throws({message: 'fake error'})
+			sinon.stub(webTocken, 'refresh').throws({ message: 'fake error' })
 
 			const next = (errorObj) => {
 				try {
 					expect(errorObj).to.have.all.keys('status', 'message')
 					done()
-				} catch(err) {
+				} catch (err) {
 					done(err)
 				}
 
 				webTocken.refresh.restore()
 			}
-		
+
 			refreshToken(authReq, res, next)
 		})
 
@@ -245,20 +245,20 @@ describe('User Controller', () => {
 					expect(webTocken.refresh).to.have.been.calledWith(token, refreshTokenData)
 					expect(payload).to.be.deep.equal(newAuthData)
 					done()
-				} catch(err) {
+				} catch (err) {
 					done(err)
 				}
 
 				webTocken.refresh.restore()
 			})
-		
-			refreshToken(authReq, res, () => {})
+
+			refreshToken(authReq, res, () => { })
 		})
 	})
 
 	context('getData', () => {
 		it('should send response with founded user data', (done) => {
-			const {id, resetPasswordToken, ...userData} = fakeUserData
+			const { id, resetPasswordToken, ...userData } = fakeUserData
 
 			res.json.callsFake((jsonArgs) => {
 				try {
@@ -270,7 +270,7 @@ describe('User Controller', () => {
 				}
 			})
 
-			getData(authReq, res, () => {})
+			getData(authReq, res, () => { })
 		})
 	})
 
@@ -284,7 +284,7 @@ describe('User Controller', () => {
 					done(err)
 				}
 			}
-		
+
 			updateData(authReq, res, next)
 		})
 
@@ -303,7 +303,7 @@ describe('User Controller', () => {
 					done(err)
 				}
 			}
-		
+
 			updateData(authReq, res, next)
 		})
 
@@ -322,8 +322,8 @@ describe('User Controller', () => {
 					done(err)
 				}
 			})
-		
-			updateData(authReq, res, () => {})
+
+			updateData(authReq, res, () => { })
 		})
 	})
 
@@ -373,7 +373,7 @@ describe('User Controller', () => {
 				}
 			})
 
-			sendResetEmail(nonAuthReq, res, () => {})
+			sendResetEmail(nonAuthReq, res, () => { })
 		})
 
 		it('should call sendMessage on mailClient and send response with status 204', (done) => {
@@ -396,7 +396,7 @@ describe('User Controller', () => {
 				mailClient.sendMessage.restore()
 			})
 
-			sendResetEmail(nonAuthReq, res, () => {})
+			sendResetEmail(nonAuthReq, res, () => { })
 		})
 	})
 
@@ -410,7 +410,7 @@ describe('User Controller', () => {
 					done(err)
 				}
 			}
-		
+
 			resetPassword(nonAuthReq, res, next)
 		})
 
@@ -431,7 +431,7 @@ describe('User Controller', () => {
 					done(err)
 				}
 			}
-		
+
 			resetPassword(nonAuthReq, res, next)
 		})
 
@@ -454,7 +454,7 @@ describe('User Controller', () => {
 				}
 			})
 
-			resetPassword(nonAuthReq, res, () => {})
+			resetPassword(nonAuthReq, res, () => { })
 		})
 	})
 
@@ -471,7 +471,7 @@ describe('User Controller', () => {
 				}
 			})
 
-			deleteUser(authReq, res, () => {})
+			deleteUser(authReq, res, () => { })
 		})
 	})
 })
