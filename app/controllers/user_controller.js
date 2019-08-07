@@ -156,9 +156,22 @@ exports.sendResetEmail = (req, res, next) => {
 		models.User.findOne({ where: { email: resetEmail } })
 			.then(user => {
 				if (user) {
-					mailClient.sendMessage(user.email, {
-						nickname: user.nickname,
-						resetLink: `https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}`
+					mailClient.sendMessage({
+						to: user.email,
+						subject: 'City inspector - zmiana hasła',
+						text:
+							'City Inspector\n\n' +
+							`Witaj ${user.nickname}!\n` +
+							'Wiadomość została wysłana ze względu na próbę zmiany hasła.\n' +
+							'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:\n' +
+							`https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}`,
+						html:
+							`<p>Witaj ${user.nickname}!</p>
+							<p>Wiadomość została wysłana ze względu na próbę zmiany hasła.</p>
+							<p>Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:</p>
+							<a href="https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}">
+								https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}
+							</a>`
 					})
 						.then(() => res.status(204).send())
 						.catch(() => next({ status: 503 }))

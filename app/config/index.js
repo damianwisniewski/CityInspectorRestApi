@@ -1,7 +1,7 @@
 const { join } = require('path')
 const envType = process.env.NODE_ENV || 'DEVELOPMENT'
 require('dotenv')
-	.config({ path: join(__dirname, `/env_vars/.env.${envType.toLowerCase()}`) })
+	.config({ path: join(__dirname, `/.env.${envType.toLowerCase()}`) })
 
 /**
  * CONFIGURATIONS

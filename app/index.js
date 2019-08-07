@@ -59,3 +59,8 @@ Promise.all([
 	.catch(err => {
 		console.error('Unable to connect to service:', err)
 	})
+
+/**
+ * exports for test purposes
+ */
+module.exports = app

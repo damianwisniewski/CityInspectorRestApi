@@ -9,6 +9,10 @@ module.exports = class Subscription extends Model {
 				allowNull: false,
 				primaryKey: true,
 				unique: true,
+			},
+			changes: {
+				type: DataTypes.TEXT,
+				allowNull: true,
 			}
 		},
 			{
@@ -19,5 +23,6 @@ module.exports = class Subscription extends Model {
 
 	static associate(models) {
 		Subscription.belongsTo(models.Notification, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
+		Subscription.belongsTo(models.User, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
 	}
 }
