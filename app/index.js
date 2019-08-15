@@ -4,10 +4,11 @@ const helmet = require('helmet')
 const cors = require('cors')
 
 const routing = require('./routes')
+const db = require('./models')
 
 const envType = process.env.NODE_ENV || 'DEVELOPMENT'
+
 const app = express()
-const db = require('./models')
 
 app.use(helmet({
 	noSniff: true,
@@ -44,7 +45,7 @@ app.use((err, req, res, next) => {
  * In another case, when a connection with some service failed, the server will be closed.
  */
 Promise.all([
-	// db.sequelize.authenticate(),
+	db.sequelize.authenticate(),
 	// photoStorage.verify(),
 	// email.transporter.verify(),
 ])

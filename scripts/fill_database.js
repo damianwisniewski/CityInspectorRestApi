@@ -14,7 +14,6 @@ const createUserData = (amount = 10) => {
 		nickname: 'tester',
 		email: 'test@example.org',
 		password: 'test123',
-		privateData: 'Y',
 		emailAgreement: 'Y'
 	}]
 

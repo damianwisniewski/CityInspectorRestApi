@@ -13,30 +13,34 @@ exports.login = (req, res, next) => {
 	const { email, password } = req.body
 	let userId
 
-	models.User.findOne({ where: { email: email } })
-		.then(user => {
-			if (user) {
-				userId = user.id
-				return user.validateDataHash(password)
-			} else {
-				throw { status: 403, message: 'Invalid auth data' }
-			}
-		})
-		.then(isValid => {
-			if (isValid) {
-				const authToken = webTocken.create({
-					email,
-					userId
-				})
+	if (email && password) {
+		models.User.findOne({ where: { email: email } })
+			.then(user => {
+				if (user) {
+					userId = user.id
+					return user.validateDataHash(password)
+				} else {
+					throw { status: 403, message: 'Invalid auth data' }
+				}
+			})
+			.then(isValid => {
+				if (isValid) {
+					const authToken = webTocken.create({
+						email,
+						userId
+					})
 
-				res.status(200).json(authToken)
-			} else {
-				throw { status: 401, message: 'Invalid auth data' }
-			}
-		})
-		.catch(err => {
-			next(err)
-		})
+					res.status(200).json(authToken)
+				} else {
+					throw { status: 401, message: 'Invalid auth data' }
+				}
+			})
+			.catch(err => {
+				next(err)
+			})
+	} else {
+		next({ status: 403, message: 'Invalid auth data' })
+	}
 }
 
 /**
@@ -65,7 +69,7 @@ exports.register = (req, res, next) => {
 	if (helpers.includesParams(req.body, requireParams)) {
 		models.User.create(req.body)
 			.then(() => res.status(201).send())
-			.catch(() => next({ status: 400, message: 'Invalid data!' }))
+			.catch(() => next({ status: 401, message: 'Invalid data!' }))
 	} else {
 		next({ status: 400, message: 'Missing data!' })
 	}
@@ -84,7 +88,7 @@ exports.refreshToken = (req, res, next) => {
 			const newTokens = webTocken.refresh(token, refreshToken)
 			res.status(200).json(newTokens)
 		} catch (err) {
-			next({ status: 403, message: err.message })
+			next({ status: 403, message: 'Invalid or expired refresh token' })
 		}
 	} else {
 		next({ status: 400, message: 'Missing refresh token' })
@@ -139,7 +143,7 @@ exports.updateData = (req, res, next) => {
 				res.status(200).send()
 			})
 			.catch(() => {
-				next({ status: 400, message: 'Invalid data!' })
+				next({ status: 401, message: 'Invalid data!' })
 			})
 	} else {
 		next({ status: 400, message: 'Missing data!' })
