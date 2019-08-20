@@ -9,6 +9,10 @@ exports.modelInstanceMock = {
 	destroy: sinon.stub(),
 
 	validateDataHash: sinon.stub(),
+
+	getNotifications: sinon.stub(),
+	getSubscriptions: sinon.stub(),
+	createSubscription: sinon.stub(),
 }
 
 /**

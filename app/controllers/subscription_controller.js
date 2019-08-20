@@ -24,35 +24,37 @@ exports.add = async (req, res, next) => {
 			NotificationBelongsToUser.length
 			|| AlreadySubscribed.length
 		) {
-			return next({ status: 403, message: 'It\'s your notify or you already subscribed' })
+			return next({ status: 400, message: 'It\'s your notify or you already subscribed' })
 		}
 
-		user.createSubscription({ NotificationId })
-			.then(() => {
-				res.status(201).send()
+		try {
+			const subscription = await user.createSubscription({ NotificationId })
+			res.status(201).json({
+				subscriptionId: subscription.id
 			})
-			.catch(() => {
-				next({ status: 400, message: 'Invalid data!' })
-			})
+		} catch (err) {
+			next({ status: 401, message: 'Invalid data!' })
+		}
+
+	} else {
+		next({ status: 400, message: 'Missing data!' })
 	}
 }
 
 exports.remove = async (req, res, next) => {
 	const user = req.locals.user
 	const subscriptionId = req.params.subscriptionId
-	const subscriptions = (
-		subscriptionId
-		&& await user.getSubscriptions({ where: { id: subscriptionId } })
-	)
+	const subscriptions = subscriptionId
+		? await user.getSubscriptions({ where: { id: subscriptionId } })
+		: []
 
 	if (subscriptions.length) {
-		subscriptions[0].destroy()
-			.then(() => {
-				res.status(204).send()
-			})
-			.catch(() => {
-				next({ status: 417, message: 'Delete request failed!' })
-			})
+		try {
+			await subscriptions[0].destroy()
+			res.status(204).send()
+		} catch (err) {
+			next({ status: 417, message: 'Delete request failed!' })
+		}
 	} else {
 		next({ status: 404, message: 'Subscription not found!' })
 	}

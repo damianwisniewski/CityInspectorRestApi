@@ -27,7 +27,7 @@ describe('[ POST ] /user/login', () => {
 			})
 	})
 
-	it('should respond with 403 status and error message for incorrect data', (done) => {
+	it('should respond with 401 status and error message for incorrect data', (done) => {
 		chai.request(app)
 			.post('/user/login')
 			.send({
@@ -37,22 +37,22 @@ describe('[ POST ] /user/login', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(403)
+				expect(res.status).to.be.equal(401)
 				expect(res.body).to.be.deep.equal({ message: 'Invalid auth data' })
 
 				done()
 			})
 	})
 
-	it('should respond with 403 status and error message for no passed email and password', (done) => {
+	it('should respond with 400 status and error message for no passed email and password', (done) => {
 		chai.request(app)
 			.post('/user/login')
 			.send()
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(403)
-				expect(res.body).to.be.deep.equal({ message: 'Invalid auth data' })
+				expect(res.status).to.be.equal(400)
+				expect(res.body).to.be.deep.equal({ message: 'Missing data!' })
 
 				done()
 			})

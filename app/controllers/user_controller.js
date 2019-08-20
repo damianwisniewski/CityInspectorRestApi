@@ -9,38 +9,29 @@ const Op = Sequelize.Op;
  * Login controller
  * Sends auth token in response for correct validation of email and password
  */
-exports.login = (req, res, next) => {
+exports.login = async (req, res, next) => {
 	const { email, password } = req.body
-	let userId
+	let user
 
-	if (email && password) {
-		models.User.findOne({ where: { email: email } })
-			.then(user => {
-				if (user) {
-					userId = user.id
-					return user.validateDataHash(password)
-				} else {
-					throw { status: 403, message: 'Invalid auth data' }
-				}
-			})
-			.then(isValid => {
-				if (isValid) {
-					const authToken = webTocken.create({
-						email,
-						userId
-					})
-
-					res.status(200).json(authToken)
-				} else {
-					throw { status: 401, message: 'Invalid auth data' }
-				}
-			})
-			.catch(err => {
-				next(err)
-			})
-	} else {
-		next({ status: 403, message: 'Invalid auth data' })
+	if (!email || !password) {
+		return next({ status: 400, message: 'Missing data!' })
 	}
+
+	try {
+		user = await models.User.findOne({ where: { email: email } })
+		const isValid = user ? await user.validateDataHash(password) : false
+
+		if (!isValid) throw new Error()
+	} catch (err) {
+		return next({ status: 401, message: 'Invalid auth data' })
+	}
+
+	const authToken = webTocken.create({
+		email,
+		userId: user.id
+	})
+
+	res.status(200).json(authToken)
 }
 
 /**
@@ -139,12 +130,8 @@ exports.updateData = (req, res, next) => {
 		req.locals.user.update({
 			...updatedData
 		})
-			.then(() => {
-				res.status(200).send()
-			})
-			.catch(() => {
-				next({ status: 401, message: 'Invalid data!' })
-			})
+			.then(() => res.status(200).send())
+			.catch(() => next({ status: 401, message: 'Invalid data!' }))
 	} else {
 		next({ status: 400, message: 'Missing data!' })
 	}
@@ -153,83 +140,71 @@ exports.updateData = (req, res, next) => {
 /**
  * Initializes reset password process by send emial with prepared notification to reset password
  */
-exports.sendResetEmail = (req, res, next) => {
+exports.sendResetEmail = async (req, res, next) => {
 	const resetEmail = req.body.email
 
-	if (resetEmail) {
-		models.User.findOne({ where: { email: resetEmail } })
-			.then(user => {
-				if (user) {
-					mailClient.sendMessage({
-						to: user.email,
-						subject: 'City inspector - zmiana hasła',
-						text:
-							'City Inspector\n\n' +
-							`Witaj ${user.nickname}!\n` +
-							'Wiadomość została wysłana ze względu na próbę zmiany hasła.\n' +
-							'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:\n' +
-							`https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}`,
-						html:
-							`<p>Witaj ${user.nickname}!</p>
-							<p>Wiadomość została wysłana ze względu na próbę zmiany hasła.</p>
-							<p>Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:</p>
-							<a href="https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}">
-								https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}
-							</a>`
-					})
-						.then(() => res.status(204).send())
-						.catch(() => next({ status: 503 }))
-
-				} else {
-					/**
-					 * We don't want to give information to potential attacker,
-					 * if email that was passed, is registered in database.
-					 */
-					res.status(204).send()
-				}
-			})
-			.catch(err => {
-				next({ status: 503 })
-			})
-	} else {
-		next({ status: 400, message: 'Missed data' })
+	if (!resetEmail) {
+		return next({ status: 400, message: 'Missed data' })
 	}
 
+	try {
+		const user = await models.User.findOne({ where: { email: resetEmail } })
 
+		if (user) {
+			await mailClient.sendMessage({
+				to: user.email,
+				subject: 'City inspector - zmiana hasła',
+				text:
+					'City Inspector\n\n' +
+					`Witaj ${user.nickname}!\n` +
+					'Wiadomość została wysłana ze względu na próbę zmiany hasła.\n' +
+					'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:\n' +
+					`https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}`,
+				html:
+					`<p>Witaj ${user.nickname}!</p>
+					 <p>Wiadomość została wysłana ze względu na próbę zmiany hasła.</p>
+					 <p>Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:</p>
+					 <a href="https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}">
+						https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}
+					 </a>`
+			})
+		}
+	} catch (err) {
+		return next({ status: 503 })
+	}
+
+	/**
+	 * We don't want to give information to potential attacker,
+	 * if email that was passed, is registered in database or not.
+	 */
+	res.status(204).send()
 }
 
 /**
  * Changes password in database to new one
  */
-exports.resetPassword = (req, res, next) => {
+exports.resetPassword = async (req, res, next) => {
 	const { email, resetToken, newPassword } = req.body
 
 	if (!resetToken || !newPassword || !email) {
 		return next({ status: 400, message: 'Missing data!' })
 	}
 
-	models.User.findOne({
-		where: {
-			[Op.and]: [{ email: email }, { resetPasswordToken: resetToken }]
-		}
-	})
-		.then(user => {
-			if (user) {
-				user.update({
-					password: newPassword
-				})
-					.then(() => {
-						res.status(200).send()
-					})
-					.catch(() => {
-						throw { status: 401, message: 'Invalid data!' }
-					})
-			} else {
-				throw { status: 401, message: 'Invalid data!' }
+	try {
+		const user = await models.User.findOne({
+			where: {
+				[Op.and]: [{ email: email }, { resetPasswordToken: resetToken }]
 			}
 		})
-		.catch((err) => next({ status: err.status, message: err.message }))
 
+		if (!user) throw new Error()
+
+		await user.update({ password: newPassword })
+		res.status(200).send()
+
+	} catch (err) {
+		return next({ status: 401, message: 'Invalid data!' })
+	}
 }
 
 /**
@@ -237,10 +212,6 @@ exports.resetPassword = (req, res, next) => {
  */
 exports.deleteUser = (req, res, next) => {
 	req.locals.user.destroy()
-		.then(() => {
-			res.status(204).send()
-		})
-		.catch(err => {
-			next({ status: 417, message: 'Delete request failed!' })
-		})
+		.then(() => res.status(204).send())
+		.catch(() => next({ status: 417, message: 'Delete request failed!' }))
 }

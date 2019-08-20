@@ -16,7 +16,7 @@
 		"db-sync": "node scripts/sync_database.js",
 		"db-sync:force": "node scripts/sync_database.js --force",
 		"db-fill": "node scripts/fill_database.js",
-		"test:unit": "mocha \"./app/**/*.test.js\"",
+		"test": "mocha \"./app/**/subscription_controller.test.js\"",
 		"test:watch": "npm test -- --watch",
 		"test:coverage": "nyc report",
 		"test:system": "mocha --exit \"./system_tests/**/*.test.js\"",

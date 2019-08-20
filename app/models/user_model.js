@@ -16,13 +16,13 @@ module.exports = class User extends Model {
 			name: {
 				type: DataTypes.STRING,
 				validate: {
-					is: /[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g,
+					isAlpha: true,
 				}
 			},
 			surname: {
 				type: DataTypes.STRING,
 				validate: {
-					is: /[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż-]/g,
+					isAlpha: true,
 				}
 			},
 			gender: {
@@ -36,7 +36,7 @@ module.exports = class User extends Model {
 				allowNull: false,
 				unique: true,
 				validate: {
-					is: /[\da-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż\-_]/g,
+					isAlphanumeric: true,
 				},
 			},
 			email: {
