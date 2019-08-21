@@ -1,3 +1,8 @@
+/**
+ * Checks provided object to have required params.
+ * @param {Object<any>} obj - Object of params do you want to check
+ * @param {Array<string>} requiredParams - List of required params
+ */
 exports.includesParams = (obj, requiredParams) => {
 	const objParams = Object.keys(obj)
 

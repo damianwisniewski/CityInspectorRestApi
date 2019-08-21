@@ -1,6 +1,12 @@
 const webToken = require('./jwt_service')
 const { models } = require('../models')
 
+/**
+ * Authorization middleware.
+ * Checks if request contains authorization header and validates it.
+ * Throws some auth error if validation fail or
+ * creates in req locals data of authorized user, then passes request on.
+ */
 module.exports = (req, res, next) => {
 	try {
 		const { authorization } = req.headers

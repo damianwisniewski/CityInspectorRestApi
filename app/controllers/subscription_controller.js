@@ -1,6 +1,10 @@
 const { Sequelize, models } = require('../models')
 const mailClient = require('../services/email_service')
 
+/**
+ * Get controller
+ * Fetch subscription for notification changes
+ */
 exports.get = async (req, res, next) => {
 	const user = req.locals.user
 	const subscriptionId = req.params.subscriptionId
@@ -12,6 +16,10 @@ exports.get = async (req, res, next) => {
 	res.status(200).json(subscriptions)
 }
 
+/**
+ * Add controller
+ * Adds subscription for notification changes
+ */
 exports.add = async (req, res, next) => {
 	const user = req.locals.user
 	const NotificationId = req.query.notification
@@ -41,6 +49,10 @@ exports.add = async (req, res, next) => {
 	}
 }
 
+/**
+ * Remove controller
+ * Removes subscription for notification changes
+ */
 exports.remove = async (req, res, next) => {
 	const user = req.locals.user
 	const subscriptionId = req.params.subscriptionId
@@ -61,7 +73,7 @@ exports.remove = async (req, res, next) => {
 }
 
 /**
- * Method for notify all subscribents
+ * Function for notify all subscribents
  */
 exports.notify = async (id, changes) => {
 	const notif = await models.Notification.findByPk(id)
