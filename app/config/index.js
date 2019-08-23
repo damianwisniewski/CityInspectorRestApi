@@ -1,7 +1,7 @@
+/* eslint-disable camelcase */
 const { join } = require('path')
 const envType = process.env.NODE_ENV || 'DEVELOPMENT'
-require('dotenv')
-	.config({ path: join(__dirname, `/.env.${envType.toLowerCase()}`) })
+require('dotenv').config({ path: join(__dirname, `/.env.${envType.toLowerCase()}`) })
 
 /**
  * CONFIGURATIONS
@@ -13,7 +13,7 @@ exports.DATABASE_CONFIG = {
 	port: process.env.DATABASE_PORT,
 	host: 'localhost',
 	dialect: 'mysql',
-	logging: false
+	logging: false,
 }
 
 exports.EMAIL_CLIENT_CONFIG = {
@@ -22,10 +22,13 @@ exports.EMAIL_CLIENT_CONFIG = {
 	auth: {
 		user: process.env.EMAIL_USER,
 		pass: process.env.EMAIL_PASSWORD,
-	}
+	},
 }
 
 exports.PHOTO_STORAGE_CONFIG = {
+	cloud_name: process.env.PHOTO_STORAGE_CLOUD_NAME,
+	api_key: process.env.PHOTO_STORAGE_API_KEY,
+	api_secret: process.env.PHOTO_STORAGE_API_SECRET,
 }
 
 exports.JWT_SECRET_KEY = process.env.JWT_SECRET_KEY

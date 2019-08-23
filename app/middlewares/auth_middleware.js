@@ -1,4 +1,4 @@
-const webToken = require('./jwt_service')
+const webToken = require('../services/jwt_service')
 const { models } = require('../models')
 
 /**
@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
 							authorization: {
 								token,
 								userId,
-							}
+							},
 						}
 
 						next()
@@ -34,14 +34,13 @@ module.exports = (req, res, next) => {
 				.catch(() => {
 					next({ status: 403, message: 'You have no permission!' })
 				})
-
 		} else {
 			throw { status: 403, message: 'You have no permission!' }
 		}
 	} catch (err) {
 		next({
 			status: err.status || 401,
-			message: err.message || 'Token expired!'
+			message: err.message || 'Token expired!',
 		})
 	}
 }

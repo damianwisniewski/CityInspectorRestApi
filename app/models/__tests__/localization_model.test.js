@@ -5,36 +5,30 @@ const sinonChai = require('sinon-chai')
 const db = require('..')
 
 chai.use(sinonChai)
-const Op = Sequelize.Op;
+const Op = Sequelize.Op
 
 describe('Localization database model', () => {
 	const { Localization } = db.models
 	const LocalizationInstance = new Localization()
 
 	context('has all required params', () => {
-		[
-			'id',
-			'lat',
-			'lan',
-			'city',
-			'street',
-			'number',
-			'post',
-		].forEach(checkPropertyExists(LocalizationInstance))
+		;['id', 'lat', 'lan', 'city', 'street', 'number', 'post'].forEach(
+			checkPropertyExists(LocalizationInstance),
+		)
 	})
 
 	context('has proper data validation of inserction data', () => {
 		afterEach(async () => {
 			await Localization.destroy({
 				where: {
-					[Op.or]: [{ city: 'Miasto' }, { street: 'Ulica' }]
-				}
+					[Op.or]: [{ city: 'Miasto' }, { street: 'Ulica' }],
+				},
 			})
 		})
 
 		const defaultMockUserData = {
-			lat: 21.00,
-			lan: 11.10,
+			lat: 21.0,
+			lan: 11.1,
 			city: 'Miasto',
 			street: 'Ulica',
 			number: '11a',
@@ -49,7 +43,7 @@ describe('Localization database model', () => {
 				['mock_name', false],
 				['mock-name', false],
 				['mockName12', false],
-				['mock', false]
+				['mock', false],
 			]),
 
 			lan: new Map([
@@ -59,7 +53,7 @@ describe('Localization database model', () => {
 				['mock_name', false],
 				['mock-name', false],
 				['mockName12', false],
-				['mock', false]
+				['mock', false],
 			]),
 
 			city: new Map([
@@ -94,25 +88,19 @@ describe('Localization database model', () => {
 				['45_7', false],
 			]),
 
-			post: new Map([
-				['22-443', true],
-				['33-000', true],
-				['0-0000', false],
-				['00-0', false],
-			]),
+			post: new Map([['22-443', true], ['33-000', true], ['0-0000', false], ['00-0', false]]),
 		}
 
 		for (const key in testValidationData) {
 			const scenario = testValidationData[key]
 
 			context(`${key} validation`, () => {
-
 				for (const [value, expectation] of scenario) {
-					it(`for value "${value}" should ${expectation ? "pass" : "fail"}`, async () => {
+					it(`for value "${value}" should ${expectation ? 'pass' : 'fail'}`, async () => {
 						try {
 							await Localization.create({
 								...defaultMockUserData,
-								[key]: value
+								[key]: value,
 							})
 							expect(expectation).to.be.true
 						} catch (err) {
@@ -122,7 +110,5 @@ describe('Localization database model', () => {
 				}
 			})
 		}
-
 	})
-
 })

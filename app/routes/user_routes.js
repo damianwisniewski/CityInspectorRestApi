@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const userRouter = Router()
 
-const authService = require('../services/auth_service')
+const authService = require('../middlewares/auth_middleware')
 const {
 	login,
 	getData,

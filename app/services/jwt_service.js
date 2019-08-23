@@ -22,7 +22,7 @@ module.exports = {
 	 * 	refreshToken: string,
 	 * }}
 	 */
-	create: function (payload) {
+	create: function(payload) {
 		const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1h', jwtid: uuid() })
 		const { exp, jti } = jwt.decode(token)
 		const refreshToken = jwt.sign({ tokenId: jti }, JWT_SECRET_KEY, { expiresIn: '2h' })
@@ -30,7 +30,7 @@ module.exports = {
 		return {
 			token,
 			expiresIn: exp,
-			refreshToken
+			refreshToken,
 		}
 	},
 
@@ -40,7 +40,7 @@ module.exports = {
 	 * @param {string} token
 	 * @returns payload decoded from JWT
 	 */
-	validate: function (token) {
+	validate: function(token) {
 		if (this.blacklist.has(token)) {
 			throw { message: 'token expired' }
 		}
@@ -51,11 +51,11 @@ module.exports = {
 	/**
 	 * Refreshes tokens.
 	 * It starts from validates tokens, if they are correct, revokes them and creates new one.
-	 * In other case, for invalid tokens it will trhow error 
-	 * @param {string} token 
-	 * @param {string} refreshToken 
+	 * In other case, for invalid tokens it will trhow error
+	 * @param {string} token
+	 * @param {string} refreshToken
 	 */
-	refresh: function (token, refreshToken) {
+	refresh: function(token, refreshToken) {
 		let tokenPayload
 
 		try {
@@ -66,7 +66,6 @@ module.exports = {
 			tokenPayload = payload
 
 			if (jti !== refresh.tokenId) throw { status: 401, message: 'invalid token' }
-
 		} catch (err) {
 			throw { status: 401, message: err.message }
 		}
@@ -78,9 +77,9 @@ module.exports = {
 
 	/**
 	 * Revokes passed tockens, by pass them to blacklist
-	 * @param  {...string} tokens 
+	 * @param  {...string} tokens
 	 */
-	revoke: function (...tokens) {
+	revoke: function(...tokens) {
 		tokens.forEach(token => {
 			const { exp: expiresIn } = jwt.decode(token)
 			this.blacklist.set(token, expiresIn)
@@ -92,7 +91,7 @@ module.exports = {
 	/**
 	 * Creates interval to remove exired tokens from blacklist
 	 */
-	cleanupExpired: function () {
+	cleanupExpired: function() {
 		if (this.loopInterval) return
 
 		this.loopInterval = setInterval(() => {

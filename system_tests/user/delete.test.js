@@ -11,8 +11,9 @@ describe('[ DELETE ] /user', () => {
 
 	let auth
 
-	before((done) => {
-		chai.request(app)
+	before(done => {
+		chai
+			.request(app)
 			.post('/user/login')
 			.send({ email, password })
 			.end((err, res) => {
@@ -21,8 +22,9 @@ describe('[ DELETE ] /user', () => {
 			})
 	})
 
-	after((done) => {
-		chai.request(app)
+	after(done => {
+		chai
+			.request(app)
 			.post('/user/')
 			.send({
 				name: 'Jan',
@@ -32,15 +34,16 @@ describe('[ DELETE ] /user', () => {
 				email: 'test@example.org',
 				password: 'test123',
 				privateData: 'Y',
-				emailAgreement: 'Y'
+				emailAgreement: 'Y',
 			})
 			.end((err, res) => {
 				done()
 			})
 	})
 
-	it('should respond with status 403, for no authorization header in request', (done) => {
-		chai.request(app)
+	it('should respond with status 403, for no authorization header in request', done => {
+		chai
+			.request(app)
 			.delete('/user/')
 			.send()
 			.end((err, res) => {
@@ -53,9 +56,9 @@ describe('[ DELETE ] /user', () => {
 			})
 	})
 
-
-	it('should delete respond with status 204 and no body after successful delete', (done) => {
-		chai.request(app)
+	it('should delete respond with status 204 and no body after successful delete', done => {
+		chai
+			.request(app)
 			.delete('/user/')
 			.set('authorization', 'Bearer ' + auth.token)
 			.send()

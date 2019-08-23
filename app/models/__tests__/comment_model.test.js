@@ -11,17 +11,13 @@ describe('Comment database model', () => {
 	const CommentInstance = new Comment()
 
 	context('has all required params', () => {
-		[
-			'id',
-			'text',
-			'NotificationId'
-		].forEach(checkPropertyExists(CommentInstance))
+		;['id', 'text', 'NotificationId'].forEach(checkPropertyExists(CommentInstance))
 	})
 
 	context('has proper association', () => {
 		before(() => {
-			sinon.stub(Comment, 'hasMany').callsFake(() => { })
-			sinon.stub(Comment, 'belongsTo').callsFake(() => { })
+			sinon.stub(Comment, 'hasMany').callsFake(() => {})
+			sinon.stub(Comment, 'belongsTo').callsFake(() => {})
 			Comment.associate({ Comment, Notification })
 		})
 
@@ -31,12 +27,18 @@ describe('Comment database model', () => {
 		})
 
 		it(`with model Notification`, () => {
-			expect(Comment.belongsTo).to.have.been.calledWithExactly(Notification, { onDelete: "CASCADE", onUpdate: "NO ACTION" })
+			expect(Comment.belongsTo).to.have.been.calledWithExactly(Notification, {
+				onDelete: 'CASCADE',
+				onUpdate: 'NO ACTION',
+			})
 		})
 
-
 		it(`with model other Comment as Subcomment`, () => {
-			expect(Comment.hasMany).to.have.been.calledWithExactly(Comment, { as: 'Subcomment', onDelete: "CASCADE", onUpdate: "NO ACTION" })
+			expect(Comment.hasMany).to.have.been.calledWithExactly(Comment, {
+				as: 'Subcomment',
+				onDelete: 'CASCADE',
+				onUpdate: 'NO ACTION',
+			})
 		})
 	})
 })

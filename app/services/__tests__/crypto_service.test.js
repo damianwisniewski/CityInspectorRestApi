@@ -6,7 +6,6 @@ const cryptoService = require('../crypto_service')
 chai.use(sinonChai)
 
 describe('Crypto Service', () => {
-
 	it('generateHashedValue - should generate hashed value for passed data', async () => {
 		const hashedValue1 = await cryptoService.generateHashedValue('someMockValue')
 

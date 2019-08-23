@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('crypto')
 const { ENCRYPTION_SALT } = require('../config')
 
 module.exports = {
@@ -15,25 +15,31 @@ module.exports = {
 
 	/**
 	 * Generates encrypted hash value from passed string data.
-	 * @param {string} value 
+	 * @param {string} value
 	 * @returns {Promise<string>}
 	 */
-	generateHashedValue: function (value) {
+	generateHashedValue: function(value) {
 		return new Promise((resolve, reject) => {
-			crypto.pbkdf2(value, this.salt, this.iterations, this.keyLength, this.algorithm,
+			crypto.pbkdf2(
+				value,
+				this.salt,
+				this.iterations,
+				this.keyLength,
+				this.algorithm,
 				(err, encryptedValue) => {
 					return err ? reject(err) : resolve(encryptedValue.toString('hex'))
-				})
+				},
+			)
 		})
 	},
 
 	/**
 	 * Compares value with encrypted value
-	 * @param {string} value 
+	 * @param {string} value
 	 * @param {string} encryptedValue
 	 * @returns {Promise<boolean>}
 	 */
-	compareHashedValues: function (value, encryptedValue) {
+	compareHashedValues: function(value, encryptedValue) {
 		return new Promise((resolve, reject) => {
 			this.generateHashedValue(value)
 				.then(encrypted => resolve(encrypted.toString('hex') === encryptedValue))

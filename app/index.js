@@ -4,27 +4,31 @@ const helmet = require('helmet')
 const cors = require('cors')
 
 const routing = require('./routes')
+
 const db = require('./models')
 
-const envType = process.env.NODE_ENV || 'DEVELOPMENT'
+const photoStorage = require('./services/photo_storage_service')
+const emailClient = require('./services/email_service')
 
 const app = express()
 
-app.use(helmet({
-	noSniff: true,
-	xssFilter: false,
-	noCache: true,
-	hsts: { force: envType === 'PRODUCTION' },
-	hidePoweredBy: true,
-	frameguard: false,
-}))
+app.use(
+	helmet({
+		noSniff: true,
+		xssFilter: false,
+		noCache: true,
+		hsts: true,
+		hidePoweredBy: true,
+		frameguard: false,
+	}),
+)
 
 app.use(
 	cors({
 		origin: ['http://localhost:8888', 'http://127.0.0.1:5500'],
-		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 		allowedHeaders: ['Content-Type', 'Autorization'],
-	})
+	}),
 )
 
 app.use(bodyParser.json()) // body parser for data type "application/json"
@@ -44,11 +48,7 @@ app.use((err, req, res, next) => {
  * If all of them was correctly initialized then the server will start to listen.
  * In another case, when a connection with some service failed, the server will be closed.
  */
-Promise.all([
-	db.sequelize.authenticate(),
-	// photoStorage.verify(),
-	// email.transporter.verify(),
-])
+Promise.all([db.sequelize.authenticate(), photoStorage.connect(), emailClient.connect()])
 	.then(() => {
 		console.log('\nServices connections has been established successfully. \n')
 		db.sequelize.sync()

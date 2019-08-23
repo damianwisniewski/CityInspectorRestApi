@@ -11,16 +11,12 @@ describe('Subscription database model', () => {
 	const SubscriptionInstance = new Subscription()
 
 	context('has all required params', () => {
-		[
-			'id',
-			'NotificationId',
-			'UserId'
-		].forEach(checkPropertyExists(SubscriptionInstance))
+		;['id', 'NotificationId', 'UserId'].forEach(checkPropertyExists(SubscriptionInstance))
 	})
 
 	context('has proper association', () => {
 		beforeEach(() => {
-			sinon.spy(Subscription, 'belongsTo');
+			sinon.spy(Subscription, 'belongsTo')
 			Subscription.associate(db.models)
 		})
 

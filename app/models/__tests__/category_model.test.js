@@ -11,14 +11,10 @@ describe('Category database model', () => {
 	const CategoryInstance = new Category()
 
 	context('has all required params', () => {
-		[
-			'id',
-			'name',
-		].forEach(checkPropertyExists(CategoryInstance))
+		;['id', 'name'].forEach(checkPropertyExists(CategoryInstance))
 	})
 
 	context('has proper association', () => {
-
 		it(`with model Notification`, () => {
 			sinon.spy(Category, 'hasMany')
 			Category.associate(db.models)
@@ -30,7 +26,12 @@ describe('Category database model', () => {
 	})
 
 	context('has default records', () => {
-		const defaultRecors = ['niebezpieczne miejsca', 'uszkodzenia', 'zaniedbana zieleń', 'zanieczyszczona przestrzeń']
+		const defaultRecors = [
+			'niebezpieczne miejsca',
+			'uszkodzenia',
+			'zaniedbana zieleń',
+			'zanieczyszczona przestrzeń',
+		]
 
 		it('should be storaged in static dictionaryValues getter', () => {
 			expect(Category.dictionaryValues).to.be.deep.equal(defaultRecors)

@@ -11,14 +11,10 @@ describe('Status database model', () => {
 	const StatusInstance = new Status()
 
 	context('has all required params', () => {
-		[
-			'id',
-			'name',
-		].forEach(checkPropertyExists(StatusInstance))
+		;['id', 'name'].forEach(checkPropertyExists(StatusInstance))
 	})
 
 	context('has proper association', () => {
-
 		it(`with model Notification`, () => {
 			sinon.spy(Status, 'hasMany')
 			Status.associate(db.models)

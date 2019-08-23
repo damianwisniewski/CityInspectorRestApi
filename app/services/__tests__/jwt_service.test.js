@@ -9,15 +9,14 @@ const { JWT_SECRET_KEY } = require('../../config')
 chai.use(sinonChai)
 
 describe('JWT Service', () => {
-
-	after(() => {
+	after(e => {
 		webTokenService.blacklist.clear()
 		clearInterval(webTokenService.loopInterval)
 	})
 
 	it('create - should return object with generated token, refresh token and expiresIn', async () => {
 		const inputData = {
-			mockValue: 'test'
+			mockValue: 'test',
 		}
 
 		const tokenOutput = await webTokenService.create(inputData)
@@ -31,7 +30,7 @@ describe('JWT Service', () => {
 		expect(tokenOutput.refreshToken).to.be.a('string')
 	})
 
-	it('validate - should thow error for invalid token', (done) => {
+	it('validate - should thow error for invalid token', done => {
 		const invalidToken = 'ada34a4q29hnds-3we'
 
 		try {
@@ -42,10 +41,16 @@ describe('JWT Service', () => {
 		}
 	})
 
-	it('validate - should thow error for invalid token', (done) => {
-		sinon.stub(jwt, 'sign').onFirstCall().callsFake(() => (
-			jwt.sign.wrappedMethod({ mockPayload: 'mock' }, JWT_SECRET_KEY, { expiresIn: '1s', jwtid: 'fakeUUID' })
-		))
+	it('validate - should thow error for invalid token', done => {
+		sinon
+			.stub(jwt, 'sign')
+			.onFirstCall()
+			.callsFake(() =>
+				jwt.sign.wrappedMethod({ mockPayload: 'mock' }, JWT_SECRET_KEY, {
+					expiresIn: '1s',
+					jwtid: 'fakeUUID',
+				}),
+			)
 
 		const tokenOutput = webTokenService.create()
 		jwt.sign.restore()
@@ -60,7 +65,7 @@ describe('JWT Service', () => {
 		}, 1000)
 	})
 
-	it('validate - should thow error for token in blacklist', (done) => {
+	it('validate - should thow error for token in blacklist', done => {
 		const tokenOutput = webTokenService.create({ mockPayload: 'mock' })
 		webTokenService.revoke(tokenOutput.token, tokenOutput.refreshToken)
 
@@ -72,7 +77,7 @@ describe('JWT Service', () => {
 		}
 	})
 
-	it('validate - should pass and return token decrypted payload', (done) => {
+	it('validate - should pass and return token decrypted payload', done => {
 		const payload = { mockPayload: 'mock' }
 		const tokenOutput = webTokenService.create(payload)
 
@@ -96,7 +101,7 @@ describe('JWT Service', () => {
 		expect(decodedPayload).to.contains(payload)
 	})
 
-	it('refresh - should throw error for invalid refresh token', (done) => {
+	it('refresh - should throw error for invalid refresh token', done => {
 		const payload = { mockPayload: 'mock' }
 		const tokenOutput = webTokenService.create(payload)
 		tokenOutput.refreshToken = 'mock12token'

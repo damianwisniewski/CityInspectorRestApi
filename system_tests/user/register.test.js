@@ -6,19 +6,20 @@ const expect = chai.expect
 chai.use(chaiHttp)
 
 describe('[ POST ] /user', () => {
-
-	afterEach((done) => {
+	afterEach(done => {
 		/**
 		 * Removing created user after each test
 		 */
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user/login')
 			.send({
 				email: 'fake@example.org',
 				password: 'fake123',
 			})
 			.end((_err, res) => {
-				chai.request(app)
+				chai
+					.request(app)
 					.delete('/user/')
 					.set('authorization', 'Bearer ' + res.body.token)
 					.send()
@@ -26,17 +27,18 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 400 for no email', (done) => {
+	it('should fail and respond with status 400 for no email', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
 			gender: 'M',
 			nickname: 'fake',
 			password: 'fake123',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {
@@ -49,17 +51,18 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 400 for no password', (done) => {
+	it('should fail and respond with status 400 for no password', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
 			gender: 'M',
 			nickname: 'fake',
 			email: 'fake@example.org',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {
@@ -72,17 +75,18 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 400 for no nickname', (done) => {
+	it('should fail and respond with status 400 for no nickname', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
 			gender: 'M',
 			email: 'fake@example.org',
 			password: 'fake123',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {
@@ -95,7 +99,7 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 400 for no emailAgreement', (done) => {
+	it('should fail and respond with status 400 for no emailAgreement', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
@@ -104,7 +108,8 @@ describe('[ POST ] /user', () => {
 			email: 'fake@example.org',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {
@@ -117,21 +122,21 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-
-	it('should fail and respond with status 401 for data (email, nickname) that already exist', (done) => {
+	it('should fail and respond with status 401 for data (email, nickname) that already exist', done => {
 		const registerData = {
 			nickname: 'fake',
 			email: 'fake@example.org',
 			password: 'fake123',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {
-
-				chai.request(app)
+				chai
+					.request(app)
 					.post('/user')
 					.send(registerData)
 					.end((err, res) => {
@@ -145,7 +150,7 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should succeed and respond with status 201 and empty body', (done) => {
+	it('should succeed and respond with status 201 and empty body', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
@@ -153,10 +158,11 @@ describe('[ POST ] /user', () => {
 			nickname: 'fake',
 			email: 'fake@example.org',
 			password: 'fake123',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {
@@ -169,15 +175,16 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should succeed and respond with status 201 and empty body, even if optional params: name, surename, gander will be missing', (done) => {
+	it('should succeed and respond with status 201 and empty body, even if optional params: name, surename, gander will be missing', done => {
 		const registerData = {
 			nickname: 'fake',
 			email: 'fake@example.org',
 			password: 'fake123',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
-		chai.request(app)
+		chai
+			.request(app)
 			.post('/user')
 			.send(registerData)
 			.end((err, res) => {

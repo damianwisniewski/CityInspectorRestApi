@@ -31,7 +31,7 @@ exports.modelMock = {
 exports.res = {
 	send: sinon.stub(),
 	json: sinon.stub(),
-	status: sinon.stub().returnsThis()
+	status: sinon.stub().returnsThis(),
 }
 
 /**
@@ -47,7 +47,7 @@ exports.authReq = {
 			token: 'fake_token',
 			email: 'test@example.org',
 			userId: '7de45b63-a6f4-4f1c-8095-a036bc24c265',
-		}
+		},
 	},
 	body: {},
 	query: {},

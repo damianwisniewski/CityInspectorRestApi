@@ -11,8 +11,9 @@ describe('[ GET ] /user/logout', () => {
 
 	let auth
 
-	before((done) => {
-		chai.request(app)
+	before(done => {
+		chai
+			.request(app)
 			.post('/user/login')
 			.send({ email, password })
 			.end((err, res) => {
@@ -21,8 +22,9 @@ describe('[ GET ] /user/logout', () => {
 			})
 	})
 
-	it('should respond with auth error for request without authorization header', (done) => {
-		chai.request(app)
+	it('should respond with auth error for request without authorization header', done => {
+		chai
+			.request(app)
 			.get('/user/logout')
 			.send()
 			.end((err, res) => {
@@ -35,9 +37,9 @@ describe('[ GET ] /user/logout', () => {
 			})
 	})
 
-
-	it('should respond with error (status 412) for request without token-refresh header', (done) => {
-		chai.request(app)
+	it('should respond with error (status 412) for request without token-refresh header', done => {
+		chai
+			.request(app)
 			.get('/user/logout')
 			.set('authorization', 'Bearer ' + auth.token)
 			.send()
@@ -45,15 +47,17 @@ describe('[ GET ] /user/logout', () => {
 				expect(err).not.to.exist
 
 				expect(res.status).to.be.equal(412)
-				expect(res.body).to.be.deep.equal({ message: 'Refresh token header is missing, it have to be revoked also' })
+				expect(res.body).to.be.deep.equal({
+					message: 'Refresh token header is missing, it have to be revoked also',
+				})
 
 				done()
 			})
 	})
 
-
-	it('should respond with status 204 for successful logout', (done) => {
-		chai.request(app)
+	it('should respond with status 204 for successful logout', done => {
+		chai
+			.request(app)
 			.get('/user/logout')
 			.set('authorization', 'Bearer ' + auth.token)
 			.set('token-refresh', auth.refreshToken)

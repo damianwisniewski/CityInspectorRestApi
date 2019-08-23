@@ -2,34 +2,34 @@ const faker = require('faker/locale/pl')
 const { models } = require('../app/models')
 
 /**
-* Pushes users data to database
-* @param {number} amount 
-* @returns {Promise<Sequelize.Model>} users
-*/
+ * Pushes users data to database
+ * @param {number} amount
+ * @returns {Promise<Sequelize.Model>} users
+ */
 const createUserData = (amount = 10) => {
-	const usersDataArr = [{
-		name: 'Jan',
-		surname: 'Kowalski',
-		gender: 'M',
-		nickname: 'tester',
-		email: 'test@example.org',
-		password: 'test123',
-		emailAgreement: 'Y'
-	}]
+	const usersDataArr = [
+		{
+			name: 'Jan',
+			surname: 'Kowalski',
+			gender: 'M',
+			nickname: 'tester',
+			email: 'test@example.org',
+			password: 'test123',
+			emailAgreement: 'Y',
+		},
+	]
 
 	for (let i = 0; i < amount; i++) {
-		usersDataArr.push(
-			{
-				name: faker.name.firstName(),
-				surname: faker.name.lastName(),
-				gender: faker.random.arrayElement(['M', 'F']),
-				nickname: faker.name.firstName() + faker.random.alphaNumeric(3).toUpperCase(),
-				email: faker.internet.email(null, null, 'example.com'),
-				password: faker.internet.password(),
-				privateData: faker.random.arrayElement(['Y', 'N']),
-				emailAgreement: faker.random.arrayElement(['Y', 'N']),
-			},
-		)
+		usersDataArr.push({
+			name: faker.name.firstName(),
+			surname: faker.name.lastName(),
+			gender: faker.random.arrayElement(['M', 'F']),
+			nickname: faker.name.firstName() + faker.random.alphaNumeric(3).toUpperCase(),
+			email: faker.internet.email(null, null, 'example.com'),
+			password: faker.internet.password(),
+			privateData: faker.random.arrayElement(['Y', 'N']),
+			emailAgreement: faker.random.arrayElement(['Y', 'N']),
+		})
 	}
 
 	return models.User.bulkCreate(usersDataArr)
@@ -58,22 +58,22 @@ const createNotificationsData = (userId, amount = 10) => {
 					city: faker.address.city(),
 					street: faker.address.streetName(),
 					number: faker.random.number(),
-					post: 11 + '-' + 111
+					post: 11 + '-' + 111,
 				},
 				Photo: {
-					location: '/aa'
-				}
+					location: '/aa',
+				},
 			},
 			{
 				include: [
 					{
-						model: models.Localization
+						model: models.Localization,
 					},
 					{
-						model: models.Photo
-					}
-				]
-			}
+						model: models.Photo,
+					},
+				],
+			},
 		)
 
 		createPromisesArr.push(creationPromise)
@@ -84,7 +84,7 @@ const createNotificationsData = (userId, amount = 10) => {
 
 /**
  * Pushes subspriptions data to database
- * @param {Instance[]} subscribers 
+ * @param {Instance[]} subscribers
  * @param {Instance[]} notificationsToSubscribe
  * @returns {Promise<Instance[]>} subscriptions
  */
@@ -94,13 +94,10 @@ const createSubscriptionsData = (subscribers, notificationsToSubscribe) => {
 	subscribers.forEach(user => {
 		const subscriptions = notificationsToSubscribe.map(notification => ({
 			NotificationId: notification.id,
-			UserId: user.id
+			UserId: user.id,
 		}))
 
-		subscriptionsArr = [
-			...subscriptionsArr,
-			...subscriptions
-		]
+		subscriptionsArr = [...subscriptionsArr, ...subscriptions]
 	})
 
 	return models.Subscription.bulkCreate(subscriptionsArr)
@@ -108,7 +105,7 @@ const createSubscriptionsData = (subscribers, notificationsToSubscribe) => {
 
 /**
  * Pushes comments data to database
- * @param {Instance[]} usersWithComments 
+ * @param {Instance[]} usersWithComments
  * @param {Instance[]} notificationsWithComments
  * @returns {Promise<Instance[]>} comments
  */
@@ -119,38 +116,39 @@ const createCommentsData = (usersWithComments, notificationsWithComments) => {
 		const comments = notificationsWithComments.map(notification => ({
 			text: faker.lorem.paragraph(),
 			NotificationId: notification.id,
-			UserId: user.id
+			UserId: user.id,
 		}))
 
-		commentsArr = [
-			...commentsArr,
-			...comments
-		]
+		commentsArr = [...commentsArr, ...comments]
 	})
 
 	return models.Comment.bulkCreate(commentsArr)
 }
 
-
 /**
  * Fill database with fake data
  */
-(async () => {
+;(async () => {
 	try {
 		const users = await createUserData()
 
-		users.forEach(async (user) => {
+		users.forEach(async user => {
 			const notification = await createNotificationsData(user.id)
 
-			const subscribers = users.filter(filteredUser => user.id !== filteredUser.id && Math.round(Math.random() * 100) > 80)
-			const notificationsToSubscribe = notification.filter(() => Math.round(Math.random() * 100) > 80)
+			const subscribers = users.filter(
+				filteredUser => user.id !== filteredUser.id && Math.round(Math.random() * 100) > 80,
+			)
+			const notificationsToSubscribe = notification.filter(
+				() => Math.round(Math.random() * 100) > 80,
+			)
 			await createSubscriptionsData(subscribers, notificationsToSubscribe)
 
 			const usersWithComments = users.filter(() => Math.round(Math.random() * 100) > 85)
-			const notificationsWithComments = notification.filter(() => Math.round(Math.random() * 100) > 85)
+			const notificationsWithComments = notification.filter(
+				() => Math.round(Math.random() * 100) > 85,
+			)
 			await createCommentsData(usersWithComments, notificationsWithComments)
 		})
-
 	} catch (err) {
 		console.log(err)
 	}

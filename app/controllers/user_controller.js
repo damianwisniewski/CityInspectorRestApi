@@ -3,7 +3,7 @@ const { Sequelize, models } = require('../models')
 const helpers = require('../utils/app_helpers/helpers')
 const mailClient = require('../services/email_service')
 
-const Op = Sequelize.Op;
+const Op = Sequelize.Op
 
 /**
  * Login controller
@@ -28,7 +28,7 @@ exports.login = async (req, res, next) => {
 
 	const authToken = webTocken.create({
 		email,
-		userId: user.id
+		userId: user.id,
 	})
 
 	res.status(200).json(authToken)
@@ -91,15 +91,7 @@ exports.refreshToken = (req, res, next) => {
  * Sends basic user data for authorized user
  */
 exports.getData = (req, res, next) => {
-	const {
-		name,
-		surname,
-		gender,
-		city,
-		nickname,
-		email,
-		emailAgreement
-	} = req.locals.user
+	const { name, surname, gender, city, nickname, email, emailAgreement } = req.locals.user
 
 	res.status(200).json({
 		name,
@@ -108,7 +100,7 @@ exports.getData = (req, res, next) => {
 		city,
 		nickname,
 		email,
-		emailAgreement
+		emailAgreement,
 	})
 }
 
@@ -127,9 +119,10 @@ exports.updateData = (req, res, next) => {
 	}
 
 	if (Object.keys(updatedData).length) {
-		req.locals.user.update({
-			...updatedData
-		})
+		req.locals.user
+			.update({
+				...updatedData,
+			})
 			.then(() => res.status(200).send())
 			.catch(() => next({ status: 401, message: 'Invalid data!' }))
 	} else {
@@ -159,14 +152,17 @@ exports.sendResetEmail = async (req, res, next) => {
 					`Witaj ${user.nickname}!\n` +
 					'Wiadomość została wysłana ze względu na próbę zmiany hasła.\n' +
 					'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:\n' +
-					`https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}`,
-				html:
-					`<p>Witaj ${user.nickname}!</p>
+					`https://city-inspector.herokuapp.com/reset-password/${user.email}&${
+						user.resetPasswordToken
+					}`,
+				html: `<p>Witaj ${user.nickname}!</p>
 					 <p>Wiadomość została wysłana ze względu na próbę zmiany hasła.</p>
 					 <p>Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:</p>
-					 <a href="https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}">
+					 <a href="https://city-inspector.herokuapp.com/reset-password/${user.email}&${
+					user.resetPasswordToken
+				}">
 						https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}
-					 </a>`
+					 </a>`,
 			})
 		}
 	} catch (err) {
@@ -193,15 +189,14 @@ exports.resetPassword = async (req, res, next) => {
 	try {
 		const user = await models.User.findOne({
 			where: {
-				[Op.and]: [{ email: email }, { resetPasswordToken: resetToken }]
-			}
+				[Op.and]: [{ email: email }, { resetPasswordToken: resetToken }],
+			},
 		})
 
 		if (!user) throw new Error()
 
 		await user.update({ password: newPassword })
 		res.status(200).send()
-
 	} catch (err) {
 		return next({ status: 401, message: 'Invalid data!' })
 	}
@@ -211,7 +206,8 @@ exports.resetPassword = async (req, res, next) => {
  * Delete user account
  */
 exports.deleteUser = (req, res, next) => {
-	req.locals.user.destroy()
+	req.locals.user
+		.destroy()
 		.then(() => res.status(204).send())
 		.catch(() => next({ status: 417, message: 'Delete request failed!' }))
 }

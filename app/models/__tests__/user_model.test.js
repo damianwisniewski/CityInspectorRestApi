@@ -6,30 +6,23 @@ const sinonChai = require('sinon-chai')
 const db = require('..')
 
 chai.use(sinonChai)
-const Op = Sequelize.Op;
+const Op = Sequelize.Op
 
 describe('User database model', () => {
 	const { User, Notification, Comment, Subscription } = db.models
 	const UserInstance = new User()
 
 	context('has all required params', () => {
-		[
-			'id',
-			'name',
-			'surname',
-			'gender',
-			'nickname',
-			'email',
-			'password',
-			'emailAgreement'
-		].forEach(checkPropertyExists(UserInstance))
+		;['id', 'name', 'surname', 'gender', 'nickname', 'email', 'password', 'emailAgreement'].forEach(
+			checkPropertyExists(UserInstance),
+		)
 	})
 
 	context('has proper associations', () => {
 		const ModelsToAssociate = [Notification, Comment, Subscription]
 
 		beforeEach(() => {
-			sinon.spy(User, 'hasMany');
+			sinon.spy(User, 'hasMany')
 			User.associate(db.models)
 		})
 
@@ -48,8 +41,8 @@ describe('User database model', () => {
 		beforeEach(async () => {
 			await User.destroy({
 				where: {
-					[Op.or]: [{ email: 'sadas@op.pl' }, { nickname: 'dafasd' }]
-				}
+					[Op.or]: [{ email: 'sadas@op.pl' }, { nickname: 'dafasd' }],
+				},
 			})
 		})
 
@@ -60,7 +53,7 @@ describe('User database model', () => {
 			nickname: 'dafasd',
 			password: 'ssssdsfsdsdsd',
 			gender: 'M',
-			emailAgreement: 'Y'
+			emailAgreement: 'Y',
 		}
 
 		const testValidationData = {
@@ -71,7 +64,7 @@ describe('User database model', () => {
 				['mock_name', false],
 				['mock-name', false],
 				['mockName12', false],
-				['mock name', false]
+				['mock name', false],
 			]),
 
 			surname: new Map([
@@ -117,32 +110,21 @@ describe('User database model', () => {
 				['mock/name', true],
 			]),
 
-			gender: new Map([
-				['M', true],
-				['F', true],
-				['A', false],
-				['Ya', false],
-			]),
+			gender: new Map([['M', true], ['F', true], ['A', false], ['Ya', false]]),
 
-			emailAgreement: new Map([
-				['Y', true],
-				['N', true],
-				['A', false],
-				['Ya', false],
-			]),
+			emailAgreement: new Map([['Y', true], ['N', true], ['A', false], ['Ya', false]]),
 		}
 
 		for (const key in testValidationData) {
 			const scenario = testValidationData[key]
 
 			context(`${key} validation`, () => {
-
 				for (const [value, expectation] of scenario) {
-					it(`for value "${value}" should ${expectation ? "pass" : "fail"}`, async () => {
+					it(`for value "${value}" should ${expectation ? 'pass' : 'fail'}`, async () => {
 						try {
 							await User.create({
 								...defaultMockUserData,
-								[key]: value
+								[key]: value,
 							})
 							expect(expectation).to.be.true
 						} catch (err) {
@@ -152,7 +134,6 @@ describe('User database model', () => {
 				}
 			})
 		}
-
 	})
 
 	context('Static method - generateDataHash', () => {
@@ -162,20 +143,17 @@ describe('User database model', () => {
 
 			expect(hashedPassport)
 				.to.be.a('string')
-				.and
-				.to.not.be.empty
-				.and
-				.not.equal(passport)
+				.and.to.not.be.empty.and.not.equal(passport)
 		})
 	})
 
-	context('Created instance\'s method validateDataHash', () => {
+	context("Created instance's method validateDataHash", () => {
 		let UserInstance
 
 		before(async () => {
-			[UserInstance] = await User.findOrCreate({
+			;[UserInstance] = await User.findOrCreate({
 				where: {
-					email: 'sada@op.pl'
+					email: 'sada@op.pl',
 				},
 				defaults: {
 					name: 'dafgdfsd',
@@ -183,8 +161,8 @@ describe('User database model', () => {
 					email: 'sadas@op.pl',
 					nickname: 'dafasd',
 					password: 'ssssdsfsdsdsd',
-					gender: 'M'
-				}
+					gender: 'M',
+				},
 			})
 		})
 

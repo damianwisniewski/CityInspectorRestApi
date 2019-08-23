@@ -28,22 +28,18 @@ exports.add = async (req, res, next) => {
 		const NotificationBelongsToUser = await user.getNotifications({ where: { id: NotificationId } })
 		const AlreadySubscribed = await user.getSubscriptions({ where: { NotificationId } })
 
-		if (
-			NotificationBelongsToUser.length
-			|| AlreadySubscribed.length
-		) {
-			return next({ status: 400, message: 'It\'s your notify or you already subscribed' })
+		if (NotificationBelongsToUser.length || AlreadySubscribed.length) {
+			return next({ status: 400, message: "It's your notify or you already subscribed" })
 		}
 
 		try {
 			const subscription = await user.createSubscription({ NotificationId })
 			res.status(201).json({
-				subscriptionId: subscription.id
+				subscriptionId: subscription.id,
 			})
 		} catch (err) {
 			next({ status: 401, message: 'Invalid data!' })
 		}
-
 	} else {
 		next({ status: 400, message: 'Missing data!' })
 	}
@@ -82,9 +78,9 @@ exports.notify = async (id, changes) => {
 			include: [
 				[Sequelize.col('User.email'), 'email'],
 				[Sequelize.col('User.emailAgreement'), 'emailAgreement'],
-			]
+			],
 		},
-		include: [models.User]
+		include: [models.User],
 	})
 
 	subscribers.forEach(sub => {
@@ -93,12 +89,12 @@ exports.notify = async (id, changes) => {
 				to: sub.get('email'),
 				subject: 'Zmiany w: ' + notif.title,
 				text: '',
-				html: ''
+				html: '',
 			})
 		}
 
 		subscribers.update({
-			changes: sub.get('changes') + `$${changes}$`
+			changes: sub.get('changes') + `$${changes}$`,
 		})
 	})
 }

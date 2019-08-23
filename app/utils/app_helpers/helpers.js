@@ -18,3 +18,8 @@ exports.includesParams = (obj, requiredParams) => {
 		return false
 	}
 }
+
+/**
+ * @param {string} mimeType
+ */
+exports.getImageType = mimeType => (typeof mimeType === 'string' ? mimeType.split('/')[1] : null)

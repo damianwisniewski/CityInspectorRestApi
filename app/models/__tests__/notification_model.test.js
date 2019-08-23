@@ -11,7 +11,7 @@ describe('Notification database model', () => {
 	const NotificationInstance = new Notification()
 
 	context('has all required params', () => {
-		[
+		;[
 			'id',
 			'title',
 			'description',
@@ -27,7 +27,7 @@ describe('Notification database model', () => {
 		const ModelsToAssociate = [Photo, Localization]
 
 		beforeEach(() => {
-			sinon.spy(Notification, 'belongsTo');
+			sinon.spy(Notification, 'belongsTo')
 			Notification.associate(db.models)
 		})
 

@@ -9,8 +9,8 @@ const init = async () => {
 		 * [0] - Disables foreign
 		 * Foreign key constraints (database relations - associations)
 		 *
-			 * It's needed to disable key constraint for sync in force mode
-			 */
+		 * It's needed to disable key constraint for sync in force mode
+		 */
 		await sequelize.query('SET FOREIGN_KEY_CHECKS=0;')
 		await sequelize.sync({ force: forced })
 		await sequelize.query('SET FOREIGN_KEY_CHECKS=1;')

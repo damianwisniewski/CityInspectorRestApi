@@ -1,12 +1,8 @@
 const { Router } = require('express')
 const subscriptionRouter = Router()
 
-const authService = require('../services/auth_service')
-const {
-	get,
-	add,
-	remove
-} = require('../controllers/subscription_controller')
+const authService = require('../middlewares/auth_middleware')
+const { get, add, remove } = require('../controllers/subscription_controller')
 
 /**
  * From path [/subscription]

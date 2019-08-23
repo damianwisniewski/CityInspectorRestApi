@@ -1,34 +1,36 @@
 const { Model } = require('sequelize')
 module.exports = class Notification extends Model {
 	static init(sequelize, DataTypes) {
-		return super.init({
-			id: {
-				type: DataTypes.INTEGER,
-				autoIncrement: true,
-				allowNull: false,
-				primaryKey: true,
-				unique: true,
+		return super.init(
+			{
+				id: {
+					type: DataTypes.INTEGER,
+					autoIncrement: true,
+					allowNull: false,
+					primaryKey: true,
+					unique: true,
+				},
+				title: {
+					type: DataTypes.STRING,
+					allowNull: false,
+					unique: true,
+					validate: {
+						notEmpty: true,
+					},
+				},
+				description: {
+					type: DataTypes.TEXT,
+					allowNull: false,
+					validate: {
+						notEmpty: true,
+					},
+				},
 			},
-			title: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				unique: true,
-				validate: {
-					notEmpty: true
-				}
-			},
-			description: {
-				type: DataTypes.TEXT,
-				allowNull: false,
-				validate: {
-					notEmpty: true
-				}
-			},
-		},
 			{
 				sequelize,
-				modelName: 'Notification'
-			})
+				modelName: 'Notification',
+			},
+		)
 	}
 
 	static associate(models) {

@@ -16,13 +16,14 @@ describe('[ PUT ] /user', () => {
 		nickname: 'tester',
 		email: 'test@example.org',
 		password: 'test123',
-		emailAgreement: 'Y'
+		emailAgreement: 'Y',
 	}
 
 	let auth
 
-	before((done) => {
-		chai.request(app)
+	before(done => {
+		chai
+			.request(app)
 			.post('/user/login')
 			.send({ email, password })
 			.end((err, res) => {
@@ -31,8 +32,9 @@ describe('[ PUT ] /user', () => {
 			})
 	})
 
-	after((done) => {
-		chai.request(app)
+	after(done => {
+		chai
+			.request(app)
 			.put('/user/')
 			.set('authorization', 'Bearer ' + auth.token)
 			.send(originalData)
@@ -42,8 +44,9 @@ describe('[ PUT ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 403, for no authorization header in request', (done) => {
-		chai.request(app)
+	it('should fail and respond with status 403, for no authorization header in request', done => {
+		chai
+			.request(app)
 			.put('/user/')
 			.send()
 			.end((err, res) => {
@@ -56,8 +59,9 @@ describe('[ PUT ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 400, for no data to update passed', (done) => {
-		chai.request(app)
+	it('should fail and respond with status 400, for no data to update passed', done => {
+		chai
+			.request(app)
 			.put('/user/')
 			.set('authorization', 'Bearer ' + auth.token)
 			.send()
@@ -77,16 +81,17 @@ describe('[ PUT ] /user', () => {
 			surname: 'Fa@ke',
 			gender: 'D',
 			emailAgreement: 'U',
-			email: 'example.org'
+			email: 'example.org',
 		}
 
 		Object.keys(invalidData).forEach((param, index) => {
-			it(`should fail and respond with status 401, for invalid ${param} to update`, (done) => {
-				chai.request(app)
+			it(`should fail and respond with status 401, for invalid ${param} to update`, done => {
+				chai
+					.request(app)
 					.put('/user/')
 					.set('authorization', 'Bearer ' + auth.token)
 					.send({
-						[param]: invalidData[param]
+						[param]: invalidData[param],
 					})
 					.end((err, res) => {
 						expect(err).not.to.exist
@@ -106,16 +111,17 @@ describe('[ PUT ] /user', () => {
 			surname: 'Kowalska',
 			gender: 'F',
 			emailAgreement: 'N',
-			email: 'test@example.org'
+			email: 'test@example.org',
 		}
 
 		Object.keys(invalidData).forEach((param, index) => {
-			it(`should succeed and respond with status 200, for valid ${param} to update`, (done) => {
-				chai.request(app)
+			it(`should succeed and respond with status 200, for valid ${param} to update`, done => {
+				chai
+					.request(app)
 					.put('/user/')
 					.set('authorization', 'Bearer ' + auth.token)
 					.send({
-						[param]: invalidData[param]
+						[param]: invalidData[param],
 					})
 					.end((err, res) => {
 						expect(err).not.to.exist

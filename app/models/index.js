@@ -43,7 +43,6 @@ sequelize.afterConnect(() => {
 	})
 })
 
-
 /**
  * @typedef {Object} Database
  * @property {Sequelize} Database.Sequelize - Sequelize class, provides many static methods and DataTypes
