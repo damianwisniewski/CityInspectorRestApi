@@ -1,21 +1,94 @@
-// /* eslint-disable camelcase */
-// const cloudinary = require('cloudinary').v2
-// const envType = process.env.NODE_ENV
+/* eslint-disable camelcase */
+const cloudinary = require('cloudinary').v2
+const { PHOTO_STORAGE_CONFIG } = require('../config')
 
-// module.exports.verify = () => {
-// 	return new Promise((resolve, reject) => {
-// 		cloudinary.config({
-// 			cloud_name: process.env[`PHOTO_STORAGE_CLOUD_NAME_${envType}`],
-// 			api_key: process.env[`PHOTO_STORAGE_API_KEY_${envType}`],
-// 			api_secret: process.env[`PHOTO_STORAGE_API_SECRET_${envType}`],
-// 		})
+module.exports = {
+	/**
+	 * Connects to cloudinary api and checks if connection works fine.
+	 * @returns {Promise}
+	 */
+	connect: async () => {
+		cloudinary.config(PHOTO_STORAGE_CONFIG)
+		cloudinary.api.ping((error, result) => {
+			if (error) {
+				throw error
+			}
 
-// 		cloudinary.api.ping((error, result) => {
-// 			if (error) {
-// 				reject(error)
-// 			} else {
-// 				resolve(result)
-// 			}
-// 		})
-// 	})
-// }
+			return result
+		})
+	},
+
+	/**
+	 * Get resources from external storage
+	 * @param {string} NotificationId - used to find proper resources (during save resources all are saved with tag equal NotificationId)
+	 * @returns {Promise<Object>}
+	 */
+	get: async NotificationId => {
+		if (NotificationId) {
+			cloudinary.api.resources_by_tag(NotificationId, function(error, result) {
+				if (error) {
+					throw error
+				}
+				return result
+			})
+		} else {
+			throw new Error(
+				"You didn't pass proper NotificationId for remove method in photo storage service",
+			)
+		}
+	},
+
+	/**
+	 * Get resources from external storage
+	 * @param {string|string[]} NotificationId - used to find proper resources (during save resources all are saved with tag equal NotificationId)
+	 * @returns {Promise<Object>}
+	 */
+	remove: async NotificationId => {
+		/**
+		 * delete_resources accepts boolean value as first argument also, but true value will delete all resources in storage!
+		 * That's why it's safier to prevent bool value
+		 */
+		if (typeof NotificationId === 'string' || Array.isArray(NotificationId)) {
+			cloudinary.api.delete_resources(NotificationId, function(error, result) {
+				if (error) {
+					throw error
+				}
+				return result
+			})
+		} else {
+			throw new Error(
+				"You didn't pass proper NotificationId for remove method in photo storage service",
+			)
+		}
+	},
+
+	/**
+	 * Sends file to external storage
+	 * @param {Object<any>} file - data object of parsed image
+	 * @param {string} NotificationId - used for tags to be able to easy find it by api request
+	 * and catalog name where image should be saved (catalog will be created if doesn't exist)
+	 * @returns {Promise<Object>}
+	 */
+	send: async (file, NotificationId) => {
+		if (file && file.buffer && NotificationId) {
+			const encodedImage = file.buffer.toString('base64')
+
+			cloudinary.uploader.upload(
+				`data:${file.mimetype};base64,${encodedImage}`,
+				{
+					public_id: Date.now(),
+					tags: NotificationId,
+					folder: `city_inspector/${NotificationId}`,
+				},
+				function(error, result) {
+					if (error) {
+						throw error
+					}
+					return result
+				},
+			)
+		} else {
+			throw new Error("You didn't pass proper params")
+		}
+	},
+}
