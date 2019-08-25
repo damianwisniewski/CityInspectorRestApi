@@ -5,10 +5,13 @@ const Op = Sequelize.Op
 
 /**
  * GetMany controller
- * Fetch subscription for notification changes
+ * Fetch many notifications.
+ * Looking for param "type", if it's value equal:
+ * "all" - looking for all notifications of all users
+ * "own" - looking for all owned notification (created by self)
  */
 exports.getMany = async (req, res, next) => {
-	const requestType = req.params.for
+	const requestType = req.params.type
 	const queriesExists = Boolean(Object.values(req.query).length)
 	const options = {
 		attributes: ['id', 'title', 'description', 'createdAt'],
@@ -62,12 +65,12 @@ exports.getMany = async (req, res, next) => {
 		category: notification.Category.name,
 	}))
 
-	res.status(200).json(notifications.length ? notifications : [])
+	res.status(200).json(notifications)
 }
 
 /**
  * GetSingle controller
- * Fetch subscription for notification changes
+ * Get single notification of passed id
  */
 exports.getSingle = async (req, res, next) => {
 	const notificationId = req.params.notificationId
@@ -111,7 +114,7 @@ exports.getSingle = async (req, res, next) => {
 			user: notification.User.nickname,
 		})
 	} else {
-		res.status(200).json([])
+		res.status(200).json(null)
 	}
 }
 
@@ -119,6 +122,10 @@ exports.add = (req, res, next) => {}
 
 exports.update = (req, res, next) => {}
 
+/**
+ * Remove controller
+ * Remove single notification of passed id
+ */
 exports.remove = async (req, res, next) => {
 	const notificationId = req.params.notificationId
 

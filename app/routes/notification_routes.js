@@ -14,9 +14,9 @@ const {
 /**
  * From path [/notification]
  */
-notificationRouter.get('/:for(all)', getMany)
+notificationRouter.get('/:type(all)', getMany)
 
-notificationRouter.get('/:for(own)', authService, getMany)
+notificationRouter.get('/:type(own)', authService, getMany)
 
 notificationRouter.get('/single/:notificationId', getSingle)
 
