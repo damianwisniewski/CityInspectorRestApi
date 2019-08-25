@@ -36,6 +36,9 @@ module.exports = class Notification extends Model {
 	static associate(models) {
 		Notification.belongsTo(models.Photo, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
 		Notification.belongsTo(models.Localization, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
+		Notification.belongsTo(models.Status, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
+		Notification.belongsTo(models.Category, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
+		Notification.belongsTo(models.User, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
 		Notification.hasMany(models.Subscription, { onDelete: 'CASCADE', onUpdate: 'NO ACTION' })
 	}
 }

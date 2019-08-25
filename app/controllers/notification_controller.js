@@ -1,70 +1,141 @@
 const { Sequelize, models } = require('../models')
-const helper = require('../utils/app_helpers/helpers')
-
 const photoStorage = require('../services/photo_storage_service')
 
-// const multer = require('multer')
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage }).array('photos', 2);
+const Op = Sequelize.Op
 
-module.exports = {
-	/**
-	 * Get controller
-	 * Fetch subscription for notification changes
-	 */
-	get: async (req, res, next) => {
-		const subscriptionId = req.params.notificationId
+/**
+ * GetMany controller
+ * Fetch subscription for notification changes
+ */
+exports.getMany = async (req, res, next) => {
+	const requestType = req.params.for
+	const queriesExists = Boolean(Object.values(req.query).length)
+	const options = {
+		attributes: ['id', 'title', 'description', 'createdAt'],
+		include: [
+			{ model: models.Status, attributes: ['name'] },
+			{ model: models.Category, attributes: ['name'] },
+			{ model: models.Localization, attributes: ['lan', 'lat', 'city'] },
+		],
+	}
 
-		const siema = await models.Notification.findAll()
-		console.warn(siema.length)
-		res.json(siema)
-		// const subscriptions = subscriptionId
-		// 	? await user.getSubscriptions({ where: { id: subscriptionId } })
-		// 	: await user.getSubscriptions()
+	let queries
+	let notifications
 
-		// res.status(200).json(subscriptions)
-	},
+	if (queriesExists) {
+		queries = { ...req.query }
 
-	add: (req, res, next) => {
-		const user = req.locals.user
-		console.warn(req.files)
-		// console.warn(req)
+		for (const key in queries) {
+			if (queries.hasOwnProperty(key) && Array.isArray(queries[key])) {
+				queries[key] = { [Op.and]: queries[key] }
+			}
+		}
+	}
 
-		// upload(req, res, function (err) {
-		// 	if (err instanceof multer.MulterError) {
-		// 		// A Multer error occurred when uploading.
-		// 		console.error(err)
-		// 	} else if (err) {
-		// 		// An unknown error occurred when uploading.
-		// 		console.error(err)
-		// 	}
-		// 	console.warn('HEJ')
-		// 	const subscriptionId = req.params.notificationId
+	if (requestType === 'all') {
+		// All notification
+		try {
+			notifications = queriesExists
+				? await models.Notification.findAll({ where: queries, ...options })
+				: await models.Notification.findAll({ ...options })
+		} catch (err) {
+			notifications = []
+		}
+	} else {
+		// Notifcations of logged user
+		try {
+			notifications = queriesExists
+				? await req.locals.user.getNotifications({ where: queries, ...options })
+				: await req.locals.user.getNotifications({ ...options })
+		} catch (err) {
+			notifications = []
+		}
+	}
 
-		// 	// const siema = await models.Notification.findAll()
-		// 	// console.warn(siema.length)
-		// 	res.send()
-		// 	// Everything went fine.
-		// })
-		// user.createNotification({
+	notifications = notifications.map(notification => ({
+		id: notification.id,
+		title: notification.title,
+		description: notification.description,
+		createdAt: notification.createdAt,
+		localization: notification.Localization,
+		status: notification.Status.name,
+		category: notification.Category.name,
+	}))
 
-		// })
+	res.status(200).json(notifications.length ? notifications : [])
+}
 
-		// upload(req, res, function (err) {
-		// 	console.log(req.body);
-		// 	if (err) {
-		// 		return res.end("Error uploading file.");
-		// 	}
+/**
+ * GetSingle controller
+ * Fetch subscription for notification changes
+ */
+exports.getSingle = async (req, res, next) => {
+	const notificationId = req.params.notificationId
 
-		// photoStorage.send(req.files[0], 'ddd')
-		photoStorage.get('sss').then(err => console.warn(err))
-		// 	res.end("File is uploaded");
-		// });
-		// upload.single('one')
-		// res.status(200).send()
-	},
+	const notification = await models.Notification.findOne({
+		where: { id: notificationId },
+		attributes: ['id', 'title', 'description'],
+		include: [
+			{
+				model: models.Localization,
+				attributes: ['lan', 'lat', 'city', 'street', 'number', 'post'],
+			},
+			{
+				model: models.Photo,
+				attributes: ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'],
+			},
+			{
+				model: models.Status,
+				attributes: ['name'],
+			},
+			{
+				model: models.Category,
+				attributes: ['name'],
+			},
+			{
+				model: models.User,
+				attributes: ['nickname'],
+			},
+		],
+	})
 
-	update: (req, res, next) => {},
+	if (notification) {
+		res.status(200).json({
+			id: notification.id,
+			title: notification.title,
+			description: notification.description,
+			localization: notification.Localization,
+			photos: Object.values(notification.Photo.dataValues).filter(value => value),
+			status: notification.Status.name,
+			category: notification.Category.name,
+			user: notification.User.nickname,
+		})
+	} else {
+		res.status(200).json([])
+	}
+}
 
-	remove: (req, res, next) => {},
+exports.add = (req, res, next) => {}
+
+exports.update = (req, res, next) => {}
+
+exports.remove = async (req, res, next) => {
+	const notificationId = req.params.notificationId
+
+	try {
+		const isDestroyed = Boolean(
+			await models.Notification.destroy({
+				where: {
+					id: notificationId,
+					UserId: req.locals.user.id,
+				},
+			}),
+		)
+
+		isDestroyed
+			? res.status(200).send()
+			: next({ status: 404, message: 'Notification does not exist or you are not the owner!' })
+	} catch (err) {
+		next({ status: 400, message: 'Notification delete failed!' })
+	}
 }
