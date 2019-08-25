@@ -7,14 +7,16 @@ module.exports = {
 	 * Connects to cloudinary api and checks if connection works fine.
 	 * @returns {Promise}
 	 */
-	connect: async () => {
-		cloudinary.config(PHOTO_STORAGE_CONFIG)
-		cloudinary.api.ping((error, result) => {
-			if (error) {
-				throw error
-			}
+	connect: function() {
+		return new Promise((resolve, reject) => {
+			cloudinary.config(PHOTO_STORAGE_CONFIG)
+			cloudinary.api.ping((error, result) => {
+				if (error) {
+					reject(error)
+				}
 
-			return result
+				resolve(result)
+			})
 		})
 	},
 
@@ -23,19 +25,19 @@ module.exports = {
 	 * @param {string} NotificationId - used to find proper resources (during save resources all are saved with tag equal NotificationId)
 	 * @returns {Promise<Object>}
 	 */
-	get: async NotificationId => {
-		if (NotificationId) {
-			cloudinary.api.resources_by_tag(NotificationId, function(error, result) {
-				if (error) {
-					throw error
-				}
-				return result
-			})
-		} else {
-			throw new Error(
-				"You didn't pass proper NotificationId for remove method in photo storage service",
-			)
-		}
+	get: function(NotificationId) {
+		return new Promise((resolve, reject) => {
+			if (NotificationId) {
+				cloudinary.api.resources_by_tag(NotificationId, function(error, result) {
+					if (error) {
+						reject(error)
+					}
+					resolve(result)
+				})
+			} else {
+				reject("You didn't pass proper NotificationId for remove method in photo storage service")
+			}
+		})
 	},
 
 	/**
@@ -43,52 +45,58 @@ module.exports = {
 	 * @param {string|string[]} NotificationId - used to find proper resources (during save resources all are saved with tag equal NotificationId)
 	 * @returns {Promise<Object>}
 	 */
-	remove: async NotificationId => {
+	remove: function(NotificationId) {
 		/**
 		 * delete_resources accepts boolean value as first argument also, but true value will delete all resources in storage!
 		 * That's why it's safier to prevent bool value
 		 */
-		if (typeof NotificationId === 'string' || Array.isArray(NotificationId)) {
-			cloudinary.api.delete_resources(NotificationId, function(error, result) {
-				if (error) {
-					throw error
-				}
-				return result
-			})
-		} else {
-			throw new Error(
-				"You didn't pass proper NotificationId for remove method in photo storage service",
-			)
-		}
+		return new Promise((resolve, reject) => {
+			if (typeof NotificationId === 'string' || Array.isArray(NotificationId)) {
+				cloudinary.api.delete_resources(NotificationId, function(error, result) {
+					if (error) {
+						reject(error)
+					}
+					resolve(result)
+				})
+			} else {
+				reject("You didn't pass proper NotificationId for remove method in photo storage service")
+			}
+		})
 	},
 
 	/**
 	 * Sends file to external storage
-	 * @param {Object<any>} file - data object of parsed image
+	 * @param {Object|...Object} file - data object of parsed image
 	 * @param {string} NotificationId - used for tags to be able to easy find it by api request
 	 * and catalog name where image should be saved (catalog will be created if doesn't exist)
 	 * @returns {Promise<Object>}
 	 */
-	send: async (file, NotificationId) => {
-		if (file && file.buffer && NotificationId) {
-			const encodedImage = file.buffer.toString('base64')
-
-			cloudinary.uploader.upload(
-				`data:${file.mimetype};base64,${encodedImage}`,
-				{
-					public_id: Date.now(),
-					tags: NotificationId,
-					folder: `city_inspector/${NotificationId}`,
-				},
-				function(error, result) {
-					if (error) {
-						throw error
-					}
-					return result
-				},
-			)
-		} else {
-			throw new Error("You didn't pass proper params")
+	send: function(file, NotificationId) {
+		if (NotificationId && Array.isArray(file) && file.length <= 5 && !file.some(Array.isArray)) {
+			return Promise.all(file.map(separateFile => this.send(separateFile, NotificationId)))
 		}
+
+		return new Promise((resolve, reject) => {
+			if (file && file.buffer && NotificationId) {
+				const encodedImage = file.buffer.toString('base64')
+
+				cloudinary.uploader.upload(
+					`data:${file.mimetype};base64,${encodedImage}`,
+					{
+						public_id: Date.now(),
+						tags: NotificationId,
+						folder: `city_inspector/${NotificationId}`,
+					},
+					function(error, result) {
+						if (error) {
+							reject(error)
+						}
+						resolve(result)
+					},
+				)
+			} else {
+				reject("You didn't pass proper params")
+			}
+		})
 	},
 }

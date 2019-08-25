@@ -177,5 +177,36 @@ describe('Photo storage service', () => {
 					done()
 				})
 		})
+
+		it('should be recursive if first argument will be array of files', done => {
+			sinon.spy(photoStorageService, 'send')
+			const notificationId = '2Dud-023es'
+			const files = [
+				{
+					mock: 'sss',
+					mimetype: '',
+					buffer: [],
+				},
+				{
+					mock: 'sss',
+					mimetype: '',
+					buffer: [],
+				},
+				{
+					mock: 'sss',
+					mimetype: '',
+					buffer: [],
+				},
+			]
+
+			photoStorageService
+				.send(files, notificationId)
+				.then(() => {
+					expect(photoStorageService.send).to.be.callCount(files.length + 1)
+				})
+				.catch(err => {
+					done()
+				})
+		})
 	})
 })

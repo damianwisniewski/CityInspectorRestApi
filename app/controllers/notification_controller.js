@@ -1,3 +1,4 @@
+const uuid = require('uuid/v1')
 const { Sequelize, models } = require('../models')
 const photoStorage = require('../services/photo_storage_service')
 
@@ -14,10 +15,17 @@ exports.getMany = async (req, res, next) => {
 	const requestType = req.params.type
 	const queriesExists = Boolean(Object.values(req.query).length)
 	const options = {
-		attributes: ['id', 'title', 'description', 'createdAt'],
+		attributes: [
+			'id',
+			'title',
+			'description',
+			'createdAt',
+			[Sequelize.col('Status.name'), 'status'],
+			[Sequelize.col('Category.name'), 'category'],
+		],
 		include: [
-			{ model: models.Status, attributes: ['name'] },
-			{ model: models.Category, attributes: ['name'] },
+			'Status',
+			'Category',
 			{ model: models.Localization, attributes: ['lan', 'lat', 'city'] },
 		],
 	}
@@ -60,9 +68,9 @@ exports.getMany = async (req, res, next) => {
 		title: notification.title,
 		description: notification.description,
 		createdAt: notification.createdAt,
+		status: notification.status,
+		category: notification.category,
 		localization: notification.Localization,
-		status: notification.Status.name,
-		category: notification.Category.name,
 	}))
 
 	res.status(200).json(notifications)
@@ -77,7 +85,14 @@ exports.getSingle = async (req, res, next) => {
 
 	const notification = await models.Notification.findOne({
 		where: { id: notificationId },
-		attributes: ['id', 'title', 'description'],
+		attributes: [
+			'id',
+			'title',
+			'description',
+			[Sequelize.col('Status.name'), 'status'],
+			[Sequelize.col('Category.name'), 'category'],
+			[Sequelize.col('User.nickname'), 'user'],
+		],
 		include: [
 			{
 				model: models.Localization,
@@ -87,18 +102,9 @@ exports.getSingle = async (req, res, next) => {
 				model: models.Photo,
 				attributes: ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'],
 			},
-			{
-				model: models.Status,
-				attributes: ['name'],
-			},
-			{
-				model: models.Category,
-				attributes: ['name'],
-			},
-			{
-				model: models.User,
-				attributes: ['nickname'],
-			},
+			'Status',
+			'Category',
+			'User',
 		],
 	})
 
@@ -109,18 +115,58 @@ exports.getSingle = async (req, res, next) => {
 			description: notification.description,
 			localization: notification.Localization,
 			photos: Object.values(notification.Photo.dataValues).filter(value => value),
-			status: notification.Status.name,
-			category: notification.Category.name,
-			user: notification.User.nickname,
+			status: notification.status,
+			category: notification.category,
+			user: notification.user,
 		})
 	} else {
 		res.status(200).json(null)
 	}
 }
 
-exports.add = (req, res, next) => {}
+exports.add = async (req, res, next) => {
+	const { category, status, title, description, ...localization } = req.body
 
-exports.update = (req, res, next) => {}
+	const notificationUUID = uuid()
+	let categoryId
+	let statusId
+	let photos
+
+	try {
+		categoryId = await models.Category.findOne({ where: { name: category } })
+		statusId = await models.Status.findOne({ where: { name: status } })
+		const dbPhotoObj = await photoStorage.send(req.files, notificationUUID)
+
+		photos = dbPhotoObj.reduce((accumulator, currentValue, currentIndex) => {
+			accumulator[`photo${currentIndex + 1}`] = currentValue.secure_url
+		}, {})
+	} catch (err) {
+		next({ status: 400, message: 'Invalid data!' })
+	}
+
+	console.warn(typeof localization.lan)
+
+	const cos = await req.locals.user.createNotification(
+		{
+			id: notificationUUID,
+			title,
+			description,
+			CategoryId: categoryId,
+			StatusId: statusId,
+			Localization: localization,
+			Photo: photos,
+		},
+		{
+			include: ['Localization', 'Photo'],
+		},
+	)
+
+	res.status(200).json(cos)
+}
+
+exports.update = async (req, res, next) => {
+	const notificationId = req.params.notificationId
+}
 
 /**
  * Remove controller

@@ -19,6 +19,9 @@ const fakeFoundedNotification = {
 	title: 'Iure quam quidem consequatur voluptatibus quisquam quisquam consectetur mollitia.',
 	description: 'Similique provident repellendus.',
 	createdAt: 'mock',
+	status: 'mock',
+	category: 'mock',
+	user: 'mock',
 	Localization: {
 		mock: 'mock',
 	},
@@ -147,9 +150,9 @@ describe('Notification Controller', () => {
 						description: fakeFoundedNotification.description,
 						localization: fakeFoundedNotification.Localization,
 						photos: Object.values(fakeFoundedNotification.Photo.dataValues).filter(value => value),
-						status: fakeFoundedNotification.Status.name,
-						category: fakeFoundedNotification.Category.name,
-						user: fakeFoundedNotification.User.nickname,
+						status: fakeFoundedNotification.status,
+						category: fakeFoundedNotification.category,
+						user: fakeFoundedNotification.user,
 					})
 					done()
 				} catch (err) {

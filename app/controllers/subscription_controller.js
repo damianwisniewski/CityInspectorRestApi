@@ -25,15 +25,18 @@ exports.add = async (req, res, next) => {
 	const NotificationId = req.query.notification
 
 	if (NotificationId) {
-		const NotificationBelongsToUser = await user.getNotifications({ where: { id: NotificationId } })
-		const AlreadySubscribed = await user.getSubscriptions({ where: { NotificationId } })
-
-		if (NotificationBelongsToUser.length || AlreadySubscribed.length) {
-			return next({ status: 400, message: "It's your notify or you already subscribed" })
-		}
-
 		try {
+			const NotificationBelongsToUser = await user.getNotifications({
+				where: { id: NotificationId },
+			})
+			const AlreadySubscribed = await user.getSubscriptions({ where: { NotificationId } })
+
+			if (NotificationBelongsToUser.length || AlreadySubscribed.length) {
+				return next({ status: 400, message: "It's your notify or you already subscribed" })
+			}
+
 			const subscription = await user.createSubscription({ NotificationId })
+
 			res.status(201).json({
 				subscriptionId: subscription.id,
 			})

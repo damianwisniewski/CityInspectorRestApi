@@ -47,6 +47,7 @@ const createNotificationsData = (userId, amount = 10) => {
 	for (let i = 0; i < amount; i++) {
 		const creationPromise = models.Notification.create(
 			{
+				id: faker.random.uuid(),
 				title: faker.lorem.sentence(),
 				description: faker.lorem.text(),
 				CategoryId: faker.random.arrayElement([1, 2, 3, 4]),
