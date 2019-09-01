@@ -66,7 +66,7 @@ module.exports = {
 
 	/**
 	 * Sends file to external storage
-	 * @param {Object|...Object} file - data object of parsed image
+	 * @param {Object|Object[]} file - data object of parsed image
 	 * @param {string} NotificationId - used for tags to be able to easy find it by api request
 	 * and catalog name where image should be saved (catalog will be created if doesn't exist)
 	 * @returns {Promise<Object>}

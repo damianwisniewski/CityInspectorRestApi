@@ -42,7 +42,7 @@ module.exports = {
 	compareHashedValues: function(value, encryptedValue) {
 		return new Promise((resolve, reject) => {
 			this.generateHashedValue(value)
-				.then(encrypted => resolve(encrypted.toString('hex') === encryptedValue))
+				.then(encrypted => resolve(encrypted === encryptedValue))
 				.catch(err => reject(err))
 		})
 	},

@@ -38,7 +38,7 @@ module.exports = {
 	 * Validates passed token and returns it's payload,
 	 * for case of invalid, it throws error
 	 * @param {string} token
-	 * @returns payload decoded from JWT
+	 * @returns {object}
 	 */
 	validate: function(token) {
 		if (this.blacklist.has(token)) {

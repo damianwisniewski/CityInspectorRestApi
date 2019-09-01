@@ -2,9 +2,13 @@ const faker = require('faker/locale/pl')
 const { models } = require('../app/models')
 
 /**
+ * @typedef {import('sequelize').ModelType} Model
+ */
+
+/**
  * Pushes users data to database
  * @param {number} amount
- * @returns {Promise<Sequelize.Model>} users
+ * @returns {Promise<Model>} users
  */
 const createUserData = (amount = 10) => {
 	const usersDataArr = [
@@ -14,7 +18,7 @@ const createUserData = (amount = 10) => {
 			gender: 'M',
 			nickname: 'tester',
 			email: 'test@example.org',
-			password: 'test123',
+			password: 'tester123',
 			emailAgreement: 'Y',
 		},
 	]
@@ -26,7 +30,7 @@ const createUserData = (amount = 10) => {
 			gender: faker.random.arrayElement(['M', 'F']),
 			nickname: faker.name.firstName() + faker.random.alphaNumeric(3).toUpperCase(),
 			email: faker.internet.email(null, null, 'example.com'),
-			password: faker.internet.password(),
+			password: faker.internet.password(10),
 			privateData: faker.random.arrayElement(['Y', 'N']),
 			emailAgreement: faker.random.arrayElement(['Y', 'N']),
 		})

@@ -1,10 +1,9 @@
 const fs = require('fs')
 const path = require('path')
-const { DATABASE_CONFIG } = require('../config')
-
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize(DATABASE_CONFIG)
 
+const { DATABASE_CONFIG } = require('../config')
+const sequelize = new Sequelize(DATABASE_CONFIG)
 const models = {}
 
 /**
@@ -44,18 +43,22 @@ sequelize.afterConnect(() => {
 })
 
 /**
+ * @typedef {import('sequelize/types/lib/model').Model} Model
+ * @typedef {import('sequelize').Sequelize} Sequelize
+ */
+
+/**
  * @typedef {Object} Database
  * @property {Sequelize} Database.Sequelize - Sequelize class, provides many static methods and DataTypes
- * @property {Sequelize.Instance} Database.sequelize - Created instance of Sequelize class and connects to database.
  * @property {Object} Database.models - Contains all created sequelize data models
- * @property {Sequelize.Model} Database.models.Category - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Comment - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Localization - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Notification - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Photo - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Status - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.Subscription - Database model (SQL Table)
- * @property {Sequelize.Model} Database.models.User - Database model (SQL Table)
+ * @property {Model} Database.models.Category - Database model (SQL Table)
+ * @property {Model} Database.models.Comment - Database model (SQL Table)
+ * @property {Model} Database.models.Localization - Database model (SQL Table)
+ * @property {Model} Database.models.Notification - Database model (SQL Table)
+ * @property {Model} Database.models.Photo - Database model (SQL Table)
+ * @property {Model} Database.models.Status - Database model (SQL Table)
+ * @property {Model} Database.models.Subscription - Database model (SQL Table)
+ * @property {Model} Database.models.User - Database model (SQL Table)
  */
 
 /**

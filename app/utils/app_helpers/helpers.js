@@ -1,6 +1,6 @@
 /**
  * Checks provided object to have required params.
- * @param {Object<any>} obj - Object of params do you want to check
+ * @param {Object} obj - Object of params do you want to check
  * @param {Array<string>} requiredParams - List of required params
  */
 exports.includesParams = (obj, requiredParams) => {
@@ -18,8 +18,3 @@ exports.includesParams = (obj, requiredParams) => {
 		return false
 	}
 }
-
-/**
- * @param {string} mimeType
- */
-exports.getImageType = mimeType => (typeof mimeType === 'string' ? mimeType.split('/')[1] : null)

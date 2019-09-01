@@ -1,6 +1,5 @@
 const webTocken = require('../services/jwt_service')
 const { Sequelize, models } = require('../models')
-const helpers = require('../utils/app_helpers/helpers')
 const mailClient = require('../services/email_service')
 
 const Op = Sequelize.Op
@@ -12,10 +11,6 @@ const Op = Sequelize.Op
 exports.login = async (req, res, next) => {
 	const { email, password } = req.body
 	let user
-
-	if (!email || !password) {
-		return next({ status: 400, message: 'Missing data!' })
-	}
 
 	try {
 		user = await models.User.findOne({ where: { email: email } })
@@ -42,12 +37,8 @@ exports.logout = (req, res, next) => {
 	const token = req.locals.authorization.token
 	const refreshToken = req.headers['token-refresh']
 
-	if (refreshToken) {
-		webTocken.revoke(token, refreshToken)
-		res.status(204).send()
-	} else {
-		next({ status: 412, message: 'Refresh token header is missing, it have to be revoked also' })
-	}
+	webTocken.revoke(token, refreshToken)
+	res.status(204).send()
 }
 
 /**
@@ -55,15 +46,30 @@ exports.logout = (req, res, next) => {
  * Adds new user to database
  */
 exports.register = (req, res, next) => {
-	const requireParams = ['email', 'password', 'nickname', 'emailAgreement']
+	models.User.create(req.body)
+		.then(() => res.status(201).send())
+		.catch(err => {
+			let errorObj = { status: 401, message: 'Invalid data!' }
 
-	if (helpers.includesParams(req.body, requireParams)) {
-		models.User.create(req.body)
-			.then(() => res.status(201).send())
-			.catch(() => next({ status: 401, message: 'Invalid data!' }))
-	} else {
-		next({ status: 400, message: 'Missing data!' })
-	}
+			if (
+				err.errors &&
+				err.errors[0] instanceof Sequelize.ValidationErrorItem &&
+				err.errors[0].validatorKey === 'not_unique'
+			) {
+				const validationError = err.errors[0]
+
+				errorObj = {
+					status: 409,
+					message: {
+						info: validationError.message,
+						reason: 'not_unique',
+						field: validationError.path,
+					},
+				}
+			}
+
+			next(errorObj)
+		})
 }
 
 /**
@@ -74,15 +80,11 @@ exports.refreshToken = (req, res, next) => {
 	const token = req.locals.authorization.token
 	const refreshToken = req.headers['token-refresh']
 
-	if (refreshToken) {
-		try {
-			const newTokens = webTocken.refresh(token, refreshToken)
-			res.status(200).json(newTokens)
-		} catch (err) {
-			next({ status: 403, message: 'Invalid or expired refresh token' })
-		}
-	} else {
-		next({ status: 400, message: 'Missing refresh token' })
+	try {
+		const newTokens = webTocken.refresh(token, refreshToken)
+		res.status(200).json(newTokens)
+	} catch (err) {
+		next({ status: 403, message: 'Invalid or expired refresh token' })
 	}
 }
 
@@ -120,11 +122,30 @@ exports.updateData = (req, res, next) => {
 
 	if (Object.keys(updatedData).length) {
 		req.locals.user
-			.update({
-				...updatedData,
-			})
+			.update({ ...updatedData })
 			.then(() => res.status(200).send())
-			.catch(() => next({ status: 401, message: 'Invalid data!' }))
+			.catch(err => {
+				let errorObj = { status: 401, message: 'Invalid data!' }
+
+				if (
+					err.errors &&
+					err.errors[0] instanceof Sequelize.ValidationErrorItem &&
+					err.errors[0].validatorKey === 'not_unique'
+				) {
+					const validationError = err.errors[0]
+
+					errorObj = {
+						status: 409,
+						message: {
+							info: validationError.message,
+							reason: 'not_unique',
+							field: validationError.path,
+						},
+					}
+				}
+
+				next(errorObj)
+			})
 	} else {
 		next({ status: 400, message: 'Missing data!' })
 	}
@@ -135,10 +156,6 @@ exports.updateData = (req, res, next) => {
  */
 exports.sendResetEmail = async (req, res, next) => {
 	const resetEmail = req.body.email
-
-	if (!resetEmail) {
-		return next({ status: 400, message: 'Missed data' })
-	}
 
 	try {
 		const user = await models.User.findOne({ where: { email: resetEmail } })
@@ -152,15 +169,15 @@ exports.sendResetEmail = async (req, res, next) => {
 					`Witaj ${user.nickname}!\n` +
 					'Wiadomość została wysłana ze względu na próbę zmiany hasła.\n' +
 					'Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:\n' +
-					`https://city-inspector.herokuapp.com/reset-password/${user.email}&${
+					`https://city-inspector.herokuapp.com/reset-password?email=${user.email}&token=${
 						user.resetPasswordToken
 					}`,
 				html: `<p>Witaj ${user.nickname}!</p>
 					 <p>Wiadomość została wysłana ze względu na próbę zmiany hasła.</p>
 					 <p>Jeśli chcesz dokonać zmiany, przejdź na podaną poniżej stronę i podaj nowe hasło:</p>
-					 <a href="https://city-inspector.herokuapp.com/reset-password/${user.email}&${
+					 <a href="https://city-inspector.herokuapp.com/reset-password?email=${user.email}&token=${
 					user.resetPasswordToken
-				}">
+				}}">
 						https://city-inspector.herokuapp.com/reset-password/${user.email}&${user.resetPasswordToken}
 					 </a>`,
 			})
@@ -182,10 +199,6 @@ exports.sendResetEmail = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
 	const { email, resetToken, newPassword } = req.body
 
-	if (!resetToken || !newPassword || !email) {
-		return next({ status: 400, message: 'Missing data!' })
-	}
-
 	try {
 		const user = await models.User.findOne({
 			where: {
@@ -198,6 +211,7 @@ exports.resetPassword = async (req, res, next) => {
 		await user.update({ password: newPassword })
 		res.status(200).send()
 	} catch (err) {
+		console.warn(err)
 		return next({ status: 401, message: 'Invalid data!' })
 	}
 }

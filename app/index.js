@@ -15,7 +15,7 @@ const app = express()
 app.use(
 	helmet({
 		noSniff: true,
-		xssFilter: false,
+		xssFilter: true,
 		noCache: true,
 		hsts: true,
 		hidePoweredBy: true,
@@ -27,7 +27,7 @@ app.use(
 	cors({
 		origin: ['http://localhost:8888', 'http://127.0.0.1:5500'],
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-		allowedHeaders: ['Content-Type', 'Autorization'],
+		allowedHeaders: ['Content-Type', 'Autorization', 'Token-Refresh'],
 	}),
 )
 
