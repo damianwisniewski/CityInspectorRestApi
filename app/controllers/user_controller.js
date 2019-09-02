@@ -18,7 +18,11 @@ exports.login = async (req, res, next) => {
 
 		if (!isValid) throw new Error()
 	} catch (err) {
-		return next({ status: 401, message: 'Invalid auth data' })
+		return next({
+			status: 401,
+			message: 'Invalid auth data',
+			error: { ctx: err, dirname: __dirname },
+		})
 	}
 
 	const authToken = webTocken.create({
@@ -84,7 +88,11 @@ exports.refreshToken = (req, res, next) => {
 		const newTokens = webTocken.refresh(token, refreshToken)
 		res.status(200).json(newTokens)
 	} catch (err) {
-		next({ status: 403, message: 'Invalid or expired refresh token' })
+		next({
+			status: 403,
+			message: 'Invalid or expired refresh token',
+			error: { ctx: err, dirname: __dirname },
+		})
 	}
 }
 
@@ -147,7 +155,11 @@ exports.updateData = (req, res, next) => {
 				next(errorObj)
 			})
 	} else {
-		next({ status: 400, message: 'Missing data!' })
+		next({
+			status: 400,
+			message: 'Missing data!',
+			error: { dirname: __dirname },
+		})
 	}
 }
 
@@ -183,7 +195,7 @@ exports.sendResetEmail = async (req, res, next) => {
 			})
 		}
 	} catch (err) {
-		return next({ status: 503 })
+		return next({ status: 503, error: { ctx: err, dirname: __dirname } })
 	}
 
 	/**
@@ -206,13 +218,16 @@ exports.resetPassword = async (req, res, next) => {
 			},
 		})
 
-		if (!user) throw new Error()
+		if (!user) throw new Error('User for provided email and resetToken data was not found!')
 
 		await user.update({ password: newPassword })
 		res.status(200).send()
 	} catch (err) {
-		console.warn(err)
-		return next({ status: 401, message: 'Invalid data!' })
+		return next({
+			status: 401,
+			message: 'Invalid data!',
+			error: { ctx: err, dirname: __dirname },
+		})
 	}
 }
 
@@ -223,5 +238,11 @@ exports.deleteUser = (req, res, next) => {
 	req.locals.user
 		.destroy()
 		.then(() => res.status(204).send())
-		.catch(() => next({ status: 417, message: 'Delete request failed!' }))
+		.catch(err =>
+			next({
+				status: 417,
+				message: 'Delete request failed!',
+				error: { ctx: err, dirname: __dirname },
+			}),
+		)
 }

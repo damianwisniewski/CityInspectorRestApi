@@ -24,27 +24,31 @@ exports.add = async (req, res, next) => {
 	const user = req.locals.user
 	const NotificationId = req.query.notification
 
-	if (NotificationId) {
-		try {
-			const NotificationBelongsToUser = await user.getNotifications({
-				where: { id: NotificationId },
+	try {
+		const NotificationBelongsToUser = await user.getNotifications({
+			where: { id: NotificationId },
+		})
+		const AlreadySubscribed = await user.getSubscriptions({ where: { NotificationId } })
+
+		if (NotificationBelongsToUser.length || AlreadySubscribed.length) {
+			return next({
+				status: 400,
+				message: "It's your notify or you already subscribed",
+				error: { dirname: __dirname },
 			})
-			const AlreadySubscribed = await user.getSubscriptions({ where: { NotificationId } })
-
-			if (NotificationBelongsToUser.length || AlreadySubscribed.length) {
-				return next({ status: 400, message: "It's your notify or you already subscribed" })
-			}
-
-			const subscription = await user.createSubscription({ NotificationId })
-
-			res.status(201).json({
-				subscriptionId: subscription.id,
-			})
-		} catch (err) {
-			next({ status: 401, message: 'Invalid data!' })
 		}
-	} else {
-		next({ status: 400, message: 'Missing data!' })
+
+		const subscription = await user.createSubscription({ NotificationId })
+
+		res.status(201).json({
+			subscriptionId: subscription.id,
+		})
+	} catch (err) {
+		next({
+			status: 401,
+			message: 'Invalid data!',
+			error: { ctx: err, dirname: __dirname },
+		})
 	}
 }
 
@@ -64,10 +68,18 @@ exports.remove = async (req, res, next) => {
 			await subscriptions[0].destroy()
 			res.status(204).send()
 		} catch (err) {
-			next({ status: 417, message: 'Delete request failed!' })
+			next({
+				status: 417,
+				message: 'Delete request failed!',
+				error: { ctx: err, dirname: __dirname },
+			})
 		}
 	} else {
-		next({ status: 404, message: 'Subscription not found!' })
+		next({
+			status: 404,
+			message: 'Subscription not found!',
+			error: { dirname: __dirname },
+		})
 	}
 }
 

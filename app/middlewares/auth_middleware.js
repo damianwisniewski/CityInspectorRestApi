@@ -31,8 +31,12 @@ module.exports = (req, res, next) => {
 						return Promise.reject()
 					}
 				})
-				.catch(() => {
-					next({ status: 403, message: 'You have no permission!' })
+				.catch(err => {
+					next({
+						status: 403,
+						message: 'You have no permission!',
+						error: { ctx: err, dirname: __dirname },
+					})
 				})
 		} else {
 			throw { status: 403, message: 'You have no permission!' }
@@ -41,6 +45,7 @@ module.exports = (req, res, next) => {
 		next({
 			status: err.status || 401,
 			message: err.message || 'Token expired!',
+			error: { ctx: err, dirname: __dirname },
 		})
 	}
 }

@@ -32,9 +32,17 @@ module.exports = (fieldName, maxAmount = 5) => (req, res, next) => {
 	upload.array(fieldName, maxAmount)(req, res, function(err) {
 		if (err) {
 			if (err.code === 'LIMIT_FILE_SIZE') {
-				next({ status: 413, message: err.message })
+				next({
+					status: 413,
+					message: err.message,
+					error: { ctx: err, dirname: __dirname },
+				})
 			} else {
-				next({ status: 417, message: err.message })
+				next({
+					status: 417,
+					message: err.message,
+					error: { ctx: err, dirname: __dirname },
+				})
 			}
 		}
 

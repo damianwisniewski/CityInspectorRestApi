@@ -129,7 +129,6 @@ const schemas = {
 	},
 }
 
-console.warn(schemas.updateUser)
 /**
  * From path `/user`
  */

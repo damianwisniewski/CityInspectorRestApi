@@ -2,15 +2,29 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const cors = require('cors')
+const chalk = require('chalk')
 
 const routing = require('./routes')
-
 const db = require('./models')
 
 const photoStorage = require('./services/photo_storage_service')
 const emailClient = require('./services/email_service')
 
 const app = express()
+
+/**
+ * Error logs settings
+ */
+// isVerbose means, is error logs should be visiable
+const isVerbose = process.argv.includes('--logs=verbose')
+// isColorful enables chalk colors
+const isColorful = process.argv.includes('--colorful')
+/**
+ * Chalk created as new instance to be enable / disable colors
+ * Designed to be able to disable colors for debugging in chrome-console
+ * @type {import('chalk').Chalk}
+ */
+const chalkInstance = new chalk.constructor({ enabled: isColorful })
 
 app.use(
 	helmet({
@@ -40,6 +54,17 @@ app.use(routing)
  * and sends them in response
  */
 app.use((err, req, res, next) => {
+	if (isVerbose) {
+		const errorInfo = err.error
+		delete err.error
+
+		console.log('\n>', chalkInstance.white.bgRed('ERROR:'))
+		console.log(chalkInstance.gray(errorInfo.dirname))
+		console.log(chalkInstance.red.bold('------------------------------'))
+		console.error(errorInfo.ctx || err)
+		console.log(chalkInstance.red.bold('------------------------------'))
+	}
+
 	res.status(err.status).json({ message: err.message })
 })
 

@@ -18,6 +18,10 @@ module.exports = validationSchema => [
 
 		errors.isEmpty()
 			? next()
-			: next({ status: 422, message: errors.array({ onlyFirstError: true })[0].msg })
+			: next({
+					status: 422,
+					message: errors.array({ onlyFirstError: true })[0].msg,
+					error: { ctx: errors.array(), dirname: __dirname },
+			  })
 	},
 ]

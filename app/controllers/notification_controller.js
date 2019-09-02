@@ -141,7 +141,11 @@ exports.add = async (req, res, next) => {
 			accumulator[`photo${currentIndex + 1}`] = currentValue.secure_url
 		}, {})
 	} catch (err) {
-		next({ status: 400, message: 'Invalid data!' })
+		next({
+			status: 400,
+			message: 'Invalid data!',
+			error: { ctx: err, dirname: __dirname },
+		})
 	}
 
 	console.warn(typeof localization.lan)
@@ -187,8 +191,18 @@ exports.remove = async (req, res, next) => {
 
 		isDestroyed
 			? res.status(200).send()
-			: next({ status: 404, message: 'Notification does not exist or you are not the owner!' })
+			: next({
+					status: 404,
+					message: 'Notification does not exist or you are not the owner!',
+					error: {
+						dirname: __dirname,
+					},
+			  })
 	} catch (err) {
-		next({ status: 400, message: 'Notification delete failed!' })
+		next({
+			status: 400,
+			message: 'Notification delete failed!',
+			error: { ctx: err, path: __dirname },
+		})
 	}
 }

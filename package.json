@@ -11,7 +11,8 @@
 		"url": "git+https://github.com/damianwisniewski/CityInspectorRestApi.git"
 	},
 	"scripts": {
-		"start": "nodemon --inspect=0.0.0.0:9229 app/index.js",
+		"start": "nodemon app/index.js --colorful --logs=$npm_config_logs",
+		"start:chrome-inspect": "nodemon --inspect=0.0.0.0:9229 app/index.js --logs=$npm_config_logs",
 		"start:prod": "cross-env NODE_ENV=PRODUCTION node app/index.js",
 		"db-sync": "node scripts/sync_database.js",
 		"db-sync:force": "node scripts/sync_database.js --force",
