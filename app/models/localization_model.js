@@ -17,7 +17,7 @@ module.exports = class Localization extends Model {
 						isFloat: true,
 					},
 				},
-				lan: {
+				lon: {
 					type: DataTypes.FLOAT,
 					allowNull: false,
 					validate: {

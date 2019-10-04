@@ -16,12 +16,22 @@ module.exports = validationSchema => [
 	(req, res, next) => {
 		const errors = validator.validationResult(req)
 
-		errors.isEmpty()
-			? next()
-			: next({
-					status: 422,
-					message: errors.array({ onlyFirstError: true })[0].msg,
-					error: { ctx: errors.array(), dirname: __dirname },
-			  })
+		if (errors.isEmpty()) {
+			next()
+		} else {
+			const firstError = errors.array({ onlyFirstError: true })[0]
+
+			next({
+				status: 422,
+				message: {
+					info: firstError.msg,
+					field: `${firstError.location}/${firstError.param}`,
+				},
+				error: {
+					ctx: errors.array(),
+					dirname: __dirname,
+				},
+			})
+		}
 	},
 ]

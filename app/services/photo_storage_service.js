@@ -4,6 +4,11 @@ const { PHOTO_STORAGE_CONFIG } = require('../config')
 
 module.exports = {
 	/**
+	 * Path to cloudinary storage
+	 */
+	storagePath: 'https://res.cloudinary.com/dcnk17eji/image/upload/v1567580461/city_inspector/',
+
+	/**
 	 * Connects to cloudinary api and checks if connection works fine.
 	 * @returns {Promise}
 	 */
@@ -42,20 +47,26 @@ module.exports = {
 
 	/**
 	 * Get resources from external storage
-	 * @param {string|string[]} NotificationId - used to find proper resources (during save resources all are saved with tag equal NotificationId)
+	 * @param {string|string[]} NotificationId single string to delete all resources by provided tag, array of strings to delete resources by provided ids
 	 * @returns {Promise<Object>}
 	 */
 	remove: function(NotificationId) {
-		/**
-		 * delete_resources accepts boolean value as first argument also, but true value will delete all resources in storage!
-		 * That's why it's safier to prevent bool value
-		 */
+		console.warn(NotificationId)
 		return new Promise((resolve, reject) => {
-			if (typeof NotificationId === 'string' || Array.isArray(NotificationId)) {
+			if (typeof NotificationId === 'string') {
+				cloudinary.api.delete_resources_by_tag(NotificationId, function(error, result) {
+					if (error) {
+						reject(error)
+					}
+
+					resolve(result)
+				})
+			} else if (Array.isArray(NotificationId)) {
 				cloudinary.api.delete_resources(NotificationId, function(error, result) {
 					if (error) {
 						reject(error)
 					}
+
 					resolve(result)
 				})
 			} else {
@@ -68,10 +79,9 @@ module.exports = {
 	 * Sends file to external storage
 	 * @param {Object|Object[]} file - data object of parsed image
 	 * @param {string} NotificationId - used for tags to be able to easy find it by api request
-	 * and catalog name where image should be saved (catalog will be created if doesn't exist)
 	 * @returns {Promise<Object>}
 	 */
-	send: function(file, NotificationId) {
+	send: function(file, name, NotificationId) {
 		if (NotificationId && Array.isArray(file) && file.length <= 5 && !file.some(Array.isArray)) {
 			return Promise.all(file.map(separateFile => this.send(separateFile, NotificationId)))
 		}
@@ -83,9 +93,10 @@ module.exports = {
 				cloudinary.uploader.upload(
 					`data:${file.mimetype};base64,${encodedImage}`,
 					{
-						public_id: Date.now(),
+						public_id: name,
 						tags: NotificationId,
-						folder: `city_inspector/${NotificationId}`,
+						folder: 'city_inspector',
+						backup: true,
 					},
 					function(error, result) {
 						if (error) {
@@ -98,5 +109,13 @@ module.exports = {
 				reject("You didn't pass proper params")
 			}
 		})
+	},
+
+	/**
+	 * Restores deleted photos
+	 * @param {Array<string>} ids Ids of photos to restore
+	 */
+	restore: async function(ids) {
+		return Promise.all([ids.forEach(async id => await cloudinary.api.restore(id))])
 	},
 }

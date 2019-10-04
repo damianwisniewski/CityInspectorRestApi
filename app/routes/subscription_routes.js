@@ -6,6 +6,7 @@ const subscriptionRouter = Router()
 const authMiddleware = require('../middlewares/auth_middleware')
 const validatorMiddleware = require('../middlewares/data_validation_middleware')
 
+// controller
 const subscriptionController = require('../controllers/subscription_controller')
 
 /**
@@ -27,8 +28,8 @@ const inputRules = {
  * From path [/subscription]
  */
 subscriptionRouter.post('/',
-	validatorMiddleware(inputRules),
 	authMiddleware,
+	validatorMiddleware(inputRules),
 	subscriptionController.add,
 )
 

@@ -20,6 +20,7 @@ const upload = multer({
 	storage: multer.memoryStorage(),
 	limits: {
 		fileSize: 6e6, // 6MB
+		files: 5,
 	},
 	fileFilter,
 })

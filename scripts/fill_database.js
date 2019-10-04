@@ -49,9 +49,10 @@ const createNotificationsData = (userId, amount = 10) => {
 	const createPromisesArr = []
 
 	for (let i = 0; i < amount; i++) {
+		const uuid = faker.random.uuid()
 		const creationPromise = models.Notification.create(
 			{
-				id: faker.random.uuid(),
+				id: uuid,
 				title: faker.lorem.sentence(),
 				description: faker.lorem.text(),
 				CategoryId: faker.random.arrayElement([1, 2, 3, 4]),
@@ -59,25 +60,18 @@ const createNotificationsData = (userId, amount = 10) => {
 				UserId: userId,
 				Localization: {
 					lat: faker.address.latitude(),
-					lan: faker.address.longitude(),
+					lon: faker.address.longitude(),
 					city: faker.address.city(),
 					street: faker.address.streetName(),
 					number: faker.random.number(),
 					post: 11 + '-' + 111,
 				},
 				Photo: {
-					location: '/aa',
+					tag: uuid,
 				},
 			},
 			{
-				include: [
-					{
-						model: models.Localization,
-					},
-					{
-						model: models.Photo,
-					},
-				],
+				include: ['Localization', 'Photo'],
 			},
 		)
 
@@ -155,6 +149,6 @@ const createCommentsData = (usersWithComments, notificationsWithComments) => {
 			await createCommentsData(usersWithComments, notificationsWithComments)
 		})
 	} catch (err) {
-		console.log(err)
+		console.error(err)
 	}
 })()

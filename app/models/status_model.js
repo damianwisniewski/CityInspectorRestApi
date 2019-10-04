@@ -1,10 +1,6 @@
 const { Model } = require('sequelize')
 
 module.exports = class Status extends Model {
-	static get dictionaryValues() {
-		return ['zgłoszone', 'zrealizowane', 'w realizacji']
-	}
-
 	static init(sequelize, DataTypes) {
 		return super.init(
 			{
@@ -29,6 +25,10 @@ module.exports = class Status extends Model {
 
 	static associate(model) {
 		Status.hasMany(model.Notification, { onDelete: 'RESTRICT', onUpdate: 'NO ACTION' })
+	}
+
+	static get dictionaryValues() {
+		return ['zgłoszone', 'zrealizowane', 'w realizacji']
 	}
 
 	static createDictionaryValues() {

@@ -9,6 +9,9 @@ const validatorMiddleware = require('../middlewares/data_validation_middleware')
 // controller
 const userController = require('../controllers/user_controller')
 
+//helpers
+const helpers = require('../utils/app_helpers/helpers')
+
 /**
  * @typedef {import('express-validator').Schema} Schema
  */
@@ -100,20 +103,20 @@ const schemas = {
 		surname: inputRules.surname,
 	},
 
-	updateUser: Object.entries({
-		email: inputRules.email,
-		password: inputRules.password,
-		nickname: inputRules.nickname,
-		emailAgreement: inputRules.emailAgreement,
-		gender: inputRules.gender,
-		name: inputRules.name,
-		surname: inputRules.surname,
-	}).reduce((accumulatedRules, [param, rules]) => {
-		const copiedRules = {
-			[param]: Object.assign({}, { optional: true }, rules)
+	updateUser: helpers.extendNestedObjectsBy(
+		{
+			email: inputRules.email,
+			password: inputRules.password,
+			nickname: inputRules.nickname,
+			emailAgreement: inputRules.emailAgreement,
+			gender: inputRules.gender,
+			name: inputRules.name,
+			surname: inputRules.surname,
+		},
+		{
+			optional: true
 		}
-		return Object.assign(accumulatedRules, copiedRules)
-	}, {}),
+	),
 
 	resetPassword: {
 		email: inputRules.email,

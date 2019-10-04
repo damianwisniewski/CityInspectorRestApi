@@ -109,7 +109,7 @@ exports.notify = async (id, changes) => {
 		}
 
 		subscribers.update({
-			changes: sub.get('changes') + `$${changes}$`,
+			changes: sub.get('changes') + `${changes}$$`,
 		})
 	})
 }

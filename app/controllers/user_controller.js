@@ -16,7 +16,7 @@ exports.login = async (req, res, next) => {
 		user = await models.User.findOne({ where: { email: email } })
 		const isValid = user ? await user.validateDataHash(password) : false
 
-		if (!isValid) throw new Error()
+		if (!isValid) throw new Error('Invalid auth data')
 	} catch (err) {
 		return next({
 			status: 401,
@@ -53,7 +53,11 @@ exports.register = (req, res, next) => {
 	models.User.create(req.body)
 		.then(() => res.status(201).send())
 		.catch(err => {
-			let errorObj = { status: 401, message: 'Invalid data!' }
+			let errorObj = {
+				status: 401,
+				message: 'Invalid data!',
+				error: { ctx: err, dirname: __dirname },
+			}
 
 			if (
 				err.errors &&
@@ -69,6 +73,7 @@ exports.register = (req, res, next) => {
 						reason: 'not_unique',
 						field: validationError.path,
 					},
+					error: { ctx: err, dirname: __dirname },
 				}
 			}
 
@@ -133,7 +138,11 @@ exports.updateData = (req, res, next) => {
 			.update({ ...updatedData })
 			.then(() => res.status(200).send())
 			.catch(err => {
-				let errorObj = { status: 401, message: 'Invalid data!' }
+				let errorObj = {
+					status: 401,
+					message: 'Invalid data!',
+					error: { ctx: err, dirname: __dirname },
+				}
 
 				if (
 					err.errors &&
@@ -141,14 +150,17 @@ exports.updateData = (req, res, next) => {
 					err.errors[0].validatorKey === 'not_unique'
 				) {
 					const validationError = err.errors[0]
+						? {
+								info: validationError.message,
+								reason: 'not_unique',
+								field: validationError.path,
+						  }
+						: 'Invalid data!'
 
 					errorObj = {
 						status: 409,
-						message: {
-							info: validationError.message,
-							reason: 'not_unique',
-							field: validationError.path,
-						},
+						message: validationError,
+						error: { ctx: err, dirname: __dirname },
 					}
 				}
 

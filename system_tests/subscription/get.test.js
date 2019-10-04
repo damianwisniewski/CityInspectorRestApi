@@ -68,7 +68,6 @@ describe('[ GET ] /subscription', () => {
 			.end(function(err, res) {
 				expect(err).not.to.exist
 
-				console.log(res.body)
 				expect(res.status).to.be.equal(200)
 				expect(res.body).to.be.an('Array')
 				expect(res.body[0]).to.contains({ id: subId })

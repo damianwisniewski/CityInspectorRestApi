@@ -12,7 +12,7 @@ describe('Localization database model', () => {
 	const LocalizationInstance = new Localization()
 
 	context('has all required params', () => {
-		;['id', 'lat', 'lan', 'city', 'street', 'number', 'post'].forEach(
+		;['id', 'lat', 'lon', 'city', 'street', 'number', 'post'].forEach(
 			checkPropertyExists(LocalizationInstance),
 		)
 	})
@@ -28,7 +28,7 @@ describe('Localization database model', () => {
 
 		const defaultMockUserData = {
 			lat: 21.0,
-			lan: 11.1,
+			lon: 11.1,
 			city: 'Miasto',
 			street: 'Ulica',
 			number: '11a',
@@ -46,7 +46,7 @@ describe('Localization database model', () => {
 				['mock', false],
 			]),
 
-			lan: new Map([
+			lon: new Map([
 				[11.0, true],
 				[12.11, true],
 				[0.11, true],
