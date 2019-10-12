@@ -22,7 +22,7 @@ exports.get = async (req, res, next) => {
  */
 exports.add = async (req, res, next) => {
 	const user = req.locals.user
-	const NotificationId = req.query.notification
+	const NotificationId = req.params.notificationId
 
 	try {
 		const NotificationBelongsToUser = await user.getNotifications({

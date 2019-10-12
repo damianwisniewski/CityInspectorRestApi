@@ -10,26 +10,10 @@ const validatorMiddleware = require('../middlewares/data_validation_middleware')
 const subscriptionController = require('../controllers/subscription_controller')
 
 /**
- * @typedef {import('express-validator').Schema} Schema
- */
-
-/**
- * Collection of possible inputs, and its validation and sanitization rules.
- * @type {Schema}
- */
-const inputRules = {
-	notification: {
-		in: 'query',
-		exists: true,
-	},
-}
-
-/**
  * From path [/subscription]
  */
-subscriptionRouter.post('/',
+subscriptionRouter.post('/:notificationId',
 	authMiddleware,
-	validatorMiddleware(inputRules),
 	subscriptionController.add,
 )
 

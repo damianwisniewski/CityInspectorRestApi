@@ -22,7 +22,7 @@
 		"test:coverage": "nyc report",
 		"test:system": "mocha --exit \"./system_tests/**/*.test.js\"",
 		"lint": "eslint app/**/*.js",
-		"release": ""
+		"postversion": "git add package.json && git commit -m v$npm_package_version"
 	},
 	"husky": {
 		"hooks": {}
