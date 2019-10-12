@@ -46,6 +46,45 @@ const prepareCompleteNotificationData = async (req, tag) => {
 	}
 }
 
+const prepareQueriesData = queries => {
+	const queriesExists = Boolean(Object.values(queries).length)
+	const preparedQueries = {
+		Notification: {},
+		Category: {},
+		Status: {},
+		Localization: {},
+	}
+
+	if (queriesExists) {
+		const queriesCopy = { ...queries }
+		const includedModelsRules = {
+			category: { model: 'Category', column: 'name' },
+			status: { model: 'Status', column: 'name' },
+			lon: { model: 'Localization', column: 'lon' },
+			lat: { model: 'Localization', column: 'lat' },
+			city: { model: 'Localization', column: 'city' },
+		}
+
+		for (const key in queriesCopy) {
+			const querieForIncludedModel = includedModelsRules[key]
+
+			if (querieForIncludedModel) {
+				const { model, column } = querieForIncludedModel
+
+				preparedQueries[model][column] = Array.isArray(queriesCopy[key])
+					? { [Op.or]: queriesCopy[key] }
+					: queriesCopy[key]
+			} else {
+				preparedQueries.Notification[key] = Array.isArray(queriesCopy[key])
+					? { [Op.or]: queriesCopy[key] }
+					: queriesCopy[key]
+			}
+		}
+	}
+
+	return preparedQueries
+}
+
 /**
  * GetMany controller
  * Fetch many notifications.
@@ -56,8 +95,10 @@ const prepareCompleteNotificationData = async (req, tag) => {
  */
 exports.getMany = async (req, res, next) => {
 	const requestType = req.params.type
-	const queriesExists = Boolean(Object.values(req.query).length)
+	const queries = prepareQueriesData(req.query)
+
 	const options = {
+		where: queries.Notification,
 		attributes: [
 			'id',
 			'title',
@@ -65,56 +106,41 @@ exports.getMany = async (req, res, next) => {
 			'createdAt',
 			[Sequelize.col('Status.name'), 'status'],
 			[Sequelize.col('Category.name'), 'category'],
+			[Sequelize.col('Localization.lon'), 'lon'],
+			[Sequelize.col('Localization.lat'), 'lat'],
+			[Sequelize.col('Localization.city'), 'city'],
 		],
 		include: [
-			'Status',
-			'Category',
-			{ model: models.Localization, attributes: ['lon', 'lat', 'city'] },
+			{
+				model: models.Status,
+				attributes: [],
+				where: queries.Status,
+			},
+			{
+				model: models.Category,
+				attributes: [],
+				where: queries.Category,
+			},
+			{
+				model: models.Localization,
+				attributes: [],
+				where: queries.Localization,
+			},
 		],
 	}
 
-	let queries
 	let notifications
 
-	if (queriesExists) {
-		queries = { ...req.query }
-
-		for (const key in queries) {
-			if (queries.hasOwnProperty(key) && Array.isArray(queries[key])) {
-				queries[key] = { [Op.and]: queries[key] }
-			}
-		}
+	try {
+		notifications =
+			requestType === 'all'
+				? // All notification
+				  await models.Notification.findAll({ ...options })
+				: // Notifcations of logged user
+				  req.locals.user.getNotifications({ ...options })
+	} catch (err) {
+		notifications = []
 	}
-
-	if (requestType === 'all') {
-		// All notification
-		try {
-			notifications = queriesExists
-				? await models.Notification.findAll({ where: queries, ...options })
-				: await models.Notification.findAll({ ...options })
-		} catch (err) {
-			notifications = []
-		}
-	} else {
-		// Notifcations of logged user
-		try {
-			notifications = queriesExists
-				? await req.locals.user.getNotifications({ where: queries, ...options })
-				: await req.locals.user.getNotifications({ ...options })
-		} catch (err) {
-			notifications = []
-		}
-	}
-
-	notifications = notifications.map(notification => ({
-		id: notification.id,
-		title: notification.title,
-		description: notification.description,
-		createdAt: notification.createdAt,
-		status: notification.status,
-		category: notification.category,
-		localization: notification.Localization,
-	}))
 
 	res.status(200).json(notifications)
 }

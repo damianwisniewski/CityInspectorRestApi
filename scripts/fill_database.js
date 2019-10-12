@@ -59,8 +59,16 @@ const createNotificationsData = (userId, amount = 10) => {
 				StatusId: faker.random.arrayElement([1, 2, 3]),
 				UserId: userId,
 				Localization: {
-					lat: faker.address.latitude(),
-					lon: faker.address.longitude(),
+					lat: faker.random.number({
+						min: 49.0273953314,
+						max: 54.8515359564,
+						precision: 0.0000001,
+					}),
+					lon: faker.random.number({
+						min: 14.0745211117,
+						max: 24.0299857927,
+						precision: 0.0000001,
+					}),
 					city: faker.address.city(),
 					street: faker.address.streetName(),
 					number: faker.random.number(),

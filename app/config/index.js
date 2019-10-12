@@ -10,10 +10,9 @@ exports.DATABASE_CONFIG = {
 	username: process.env.DATABASE_USER_NAME,
 	password: process.env.DATABASE_PASSWORD,
 	database: process.env.DATABASE_NAME,
-	port: process.env.DATABASE_PORT,
-	host: 'localhost',
-	dialect: 'mysql',
-	logging: false,
+	host: process.env.DATABASE_HOST,
+	dialect: process.env.DATABASE_DIALECT,
+	loggin: false,
 }
 
 exports.EMAIL_CLIENT_CONFIG = {

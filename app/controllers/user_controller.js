@@ -180,7 +180,7 @@ exports.updateData = (req, res, next) => {
  */
 exports.sendResetEmail = async (req, res, next) => {
 	const resetEmail = req.body.email
-
+	console.warn(req.body)
 	try {
 		const user = await models.User.findOne({ where: { email: resetEmail } })
 
