@@ -41,7 +41,7 @@ app.use(
 	cors({
 		origin: /https?:\/\/(local-)?city-inspector.herokuapp.com(:\d*)/,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-		allowedHeaders: ['Content-Type', 'Autorization', 'Token-Refresh'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'Token-Refresh'],
 	}),
 )
 
