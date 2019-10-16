@@ -30,7 +30,11 @@ exports.login = async (req, res, next) => {
 		userId: user.id,
 	})
 
-	res.status(200).json(authToken)
+	res.status(200).json({
+		...authToken,
+		email: user.email,
+		nickname: user.nickname,
+	})
 }
 
 /**
