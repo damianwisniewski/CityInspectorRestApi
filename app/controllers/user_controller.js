@@ -90,12 +90,13 @@ exports.register = (req, res, next) => {
  * Invalidates passed auth and refresh tokens, then sends new ones
  */
 exports.refreshToken = (req, res, next) => {
+	const user = req.locals.user
 	const token = req.locals.authorization.token
 	const refreshToken = req.headers['token-refresh']
 
 	try {
 		const newTokens = webTocken.refresh(token, refreshToken)
-		res.status(200).json(newTokens)
+		res.status(200).json({ ...newTokens, email: user.email, nickname: user.nickname })
 	} catch (err) {
 		next({
 			status: 403,
