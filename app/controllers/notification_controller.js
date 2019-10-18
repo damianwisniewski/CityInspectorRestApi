@@ -172,22 +172,31 @@ exports.getSingle = async (req, res, next) => {
 				model: models.Photo,
 				attributes: ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'],
 			},
-			'Status',
-			'Category',
-			'User',
+			{
+				model: models.Status,
+				attributes: [],
+			},
+			{
+				model: models.Category,
+				attributes: [],
+			},
+			{
+				model: models.User,
+				attributes: [],
+			},
 		],
 	})
 
 	if (notification) {
 		res.status(200).json({
-			id: notification.id,
-			title: notification.title,
-			description: notification.description,
-			localization: notification.Localization,
+			id: notification.get('id'),
+			title: notification.get('title'),
+			description: notification.get('description'),
+			localization: notification.get('Localization'),
+			status: notification.get('status'),
+			category: notification.get('category'),
+			user: notification.get('user'),
 			photos: Object.values(notification.Photo.dataValues).filter(value => value),
-			status: notification.status,
-			category: notification.category,
-			user: notification.user,
 		})
 	} else {
 		res.status(200).json(null)
