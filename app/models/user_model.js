@@ -25,6 +25,12 @@ module.exports = class User extends Model {
 						isAlpha: true,
 					},
 				},
+				city: {
+					type: DataTypes.STRING,
+					validate: {
+						isAlpha: true,
+					},
+				},
 				gender: {
 					type: DataTypes.ENUM('M', 'F'),
 					validate: {

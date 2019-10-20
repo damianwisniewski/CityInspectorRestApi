@@ -71,6 +71,13 @@ const inputRules = {
 		optional: true,
 	},
 	
+	city: {
+		in: 'body',
+		trim: true,
+		isAlpha: { options: ['pl-PL'] },
+		optional: true,
+	},
+	
 	token: {
 		in: 'headers',
 		exists: true,
@@ -101,6 +108,7 @@ const schemas = {
 		gender: inputRules.gender,
 		name: inputRules.name,
 		surname: inputRules.surname,
+		city: inputRules.city,
 	},
 
 	updateUser: helpers.extendNestedObjectsBy(
@@ -112,6 +120,7 @@ const schemas = {
 			gender: inputRules.gender,
 			name: inputRules.name,
 			surname: inputRules.surname,
+			city: inputRules.city,
 		},
 		{
 			optional: true

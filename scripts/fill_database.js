@@ -27,6 +27,7 @@ const createUserData = (amount = 10) => {
 		usersDataArr.push({
 			name: faker.name.firstName(),
 			surname: faker.name.lastName(),
+			city: faker.address.city(),
 			gender: faker.random.arrayElement(['M', 'F']),
 			nickname: faker.name.firstName() + faker.random.alphaNumeric(3).toUpperCase(),
 			email: faker.internet.email(null, null, 'example.com'),
