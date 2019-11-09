@@ -14,14 +14,12 @@ module.exports = validationSchema => [
 	 * Middleware to handle validation result
 	 */
 	(req, res, next) => {
-		console.warn(req.body)
+		console.log('\n\nDalej\n\n', req.baseUrl)
 		const errors = validator.validationResult(req)
-
 		if (errors.isEmpty()) {
 			next()
 		} else {
 			const firstError = errors.array({ onlyFirstError: true })[0]
-
 			next({
 				status: 422,
 				message: {

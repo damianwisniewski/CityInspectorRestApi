@@ -15,6 +15,7 @@ const createUserData = (amount = 10) => {
 		{
 			name: 'Jan',
 			surname: 'Kowalski',
+			city: 'Katowice',
 			gender: 'M',
 			nickname: 'tester',
 			email: 'test@example.org',
@@ -65,7 +66,7 @@ const createNotificationsData = (userId, amount = 10) => {
 						max: 54.8515359564,
 						precision: 0.0000001,
 					}),
-					lon: faker.random.number({
+					lng: faker.random.number({
 						min: 14.0745211117,
 						max: 24.0299857927,
 						precision: 0.0000001,

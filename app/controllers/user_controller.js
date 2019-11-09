@@ -141,7 +141,7 @@ exports.updateData = (req, res, next) => {
 	if (Object.keys(updatedData).length) {
 		req.locals.user
 			.update({ ...updatedData })
-			.then(() => res.status(200).send())
+			.then(() => res.status(204).send())
 			.catch(err => {
 				let errorObj = {
 					status: 401,
@@ -185,7 +185,7 @@ exports.updateData = (req, res, next) => {
  */
 exports.sendResetEmail = async (req, res, next) => {
 	const resetEmail = req.body.email
-	console.warn(req.body)
+
 	try {
 		const user = await models.User.findOne({ where: { email: resetEmail } })
 
@@ -238,7 +238,7 @@ exports.resetPassword = async (req, res, next) => {
 		if (!user) throw new Error('User for provided email and resetToken data was not found!')
 
 		await user.update({ password: newPassword })
-		res.status(200).send()
+		res.status(204).send()
 	} catch (err) {
 		return next({
 			status: 401,

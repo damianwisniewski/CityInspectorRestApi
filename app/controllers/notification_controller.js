@@ -32,7 +32,7 @@ const prepareCompleteNotificationData = async (req, tag) => {
 
 	const localizationData = removeUndefinedProperties({
 		lat: req.body.lat,
-		lon: req.body.lon,
+		lng: req.body.lng,
 		city: req.body.city,
 		street: req.body.street,
 		number: req.body.number,
@@ -60,7 +60,7 @@ const prepareQueriesData = queries => {
 		const includedModelsRules = {
 			category: { model: 'Category', column: 'name' },
 			status: { model: 'Status', column: 'name' },
-			lon: { model: 'Localization', column: 'lon' },
+			lng: { model: 'Localization', column: 'lng' },
 			lat: { model: 'Localization', column: 'lat' },
 			city: { model: 'Localization', column: 'city' },
 		}
@@ -106,7 +106,7 @@ exports.getMany = async (req, res, next) => {
 			'createdAt',
 			[Sequelize.col('Status.name'), 'status'],
 			[Sequelize.col('Category.name'), 'category'],
-			[Sequelize.col('Localization.lon'), 'lon'],
+			[Sequelize.col('Localization.lng'), 'lng'],
 			[Sequelize.col('Localization.lat'), 'lat'],
 			[Sequelize.col('Localization.city'), 'city'],
 		],
@@ -136,12 +136,13 @@ exports.getMany = async (req, res, next) => {
 			requestType === 'all'
 				? // All notification
 				  await models.Notification.findAll({ ...options })
-				: // Notifcations of logged user
-				  req.locals.user.getNotifications({ ...options })
+				: // Notifications of logged user
+				  await req.locals.user.getNotifications({ ...options })
 	} catch (err) {
 		notifications = []
 	}
 
+	console.log(notifications)
 	res.status(200).json(notifications)
 }
 
@@ -166,7 +167,7 @@ exports.getSingle = async (req, res, next) => {
 		include: [
 			{
 				model: models.Localization,
-				attributes: ['lon', 'lat', 'city', 'street', 'number', 'post'],
+				attributes: ['lng', 'lat', 'city', 'street', 'number', 'post'],
 			},
 			{
 				model: models.Photo,
@@ -227,7 +228,6 @@ exports.add = async (req, res, next) => {
 	 */
 	let transaction
 	let notification
-
 	try {
 		transaction = await sequelize.transaction()
 
@@ -370,7 +370,7 @@ exports.remove = async (req, res, next) => {
 		)
 
 		isDestroyed
-			? res.status(200).send()
+			? res.status(204).send()
 			: next({
 					status: 404,
 					message: 'Notification does not exist or you are not the owner!',

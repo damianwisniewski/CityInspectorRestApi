@@ -7,7 +7,7 @@ chai.use(chaiHttp)
 
 describe('[ GET ] /user/logout', () => {
 	const email = 'test@example.org'
-	const password = 'test123'
+	const password = 'tester123'
 
 	let auth
 

@@ -7,7 +7,7 @@ chai.use(chaiHttp)
 
 describe('[ POST ] /subscription', () => {
 	const email = 'test@example.org'
-	const password = 'test123'
+	const password = 'tester123'
 
 	let auth
 	let lastSubId

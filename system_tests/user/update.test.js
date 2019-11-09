@@ -7,7 +7,7 @@ chai.use(chaiHttp)
 
 describe('[ PUT ] /user', () => {
 	const email = 'test@example.org'
-	const password = 'test123'
+	const password = 'tester123'
 
 	const originalData = {
 		name: 'Jan',
@@ -15,7 +15,7 @@ describe('[ PUT ] /user', () => {
 		gender: 'M',
 		nickname: 'tester',
 		email: 'test@example.org',
-		password: 'test123',
+		password: 'tester123',
 		emailAgreement: 'Y',
 	}
 

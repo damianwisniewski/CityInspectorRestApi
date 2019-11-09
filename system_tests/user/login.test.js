@@ -7,7 +7,7 @@ chai.use(chaiHttp)
 
 describe('[ POST ] /user/login', () => {
 	const email = 'test@example.org'
-	const password = 'test123'
+	const password = 'tester123'
 
 	it('should send auth tokens in response', done => {
 		chai

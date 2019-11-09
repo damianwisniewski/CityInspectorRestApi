@@ -7,7 +7,7 @@ chai.use(chaiHttp)
 
 describe('[ DELETE ] /user', () => {
 	const email = 'test@example.org'
-	const password = 'test123'
+	const password = 'tester123'
 
 	let auth
 
@@ -32,7 +32,7 @@ describe('[ DELETE ] /user', () => {
 				gender: 'M',
 				nickname: 'tester',
 				email: 'test@example.org',
-				password: 'test123',
+				password: 'tester123',
 				privateData: 'Y',
 				emailAgreement: 'Y',
 			})

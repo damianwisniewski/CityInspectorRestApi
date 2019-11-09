@@ -15,7 +15,7 @@ const app = express()
 /**
  * Error logs settings
  */
-// isVerbose means, is error logs should be visiable
+// isVerbose means, is error logs should be visible
 const isVerbose = process.argv.includes('--logs=verbose')
 // isColorful enables chalk colors
 const isColorful = process.argv.includes('--colorful')
@@ -39,7 +39,7 @@ app.use(
 
 app.use(
 	cors({
-		origin: /https?:\/\/(local-)?city-inspector.herokuapp.com(:\d*)/,
+		// origin: /https?:\/\/(local-)?city-inspector.herokuapp.com(:\d*)/,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 		allowedHeaders: ['Content-Type', 'Authorization', 'Token-Refresh'],
 	}),
@@ -59,13 +59,13 @@ app.use((err, req, res, next) => {
 		delete err.error
 
 		console.log('\n>', chalkInstance.white.bgRed('ERROR:'))
-		console.log(chalkInstance.gray(errorInfo.dirname))
+		console.log(chalkInstance.gray(errorInfo ? errorInfo.dirname : ''))
 		console.log(chalkInstance.red.bold('------------------------------'))
-		console.error(errorInfo.ctx || err)
+		console.error(errorInfo ? errorInfo.ctx : err)
 		console.log(chalkInstance.red.bold('------------------------------'))
 	}
 
-	res.status(err.status).json({ message: err.message })
+	res.status(err.status || 500).json({ message: err.message })
 })
 
 /**

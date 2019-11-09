@@ -29,12 +29,12 @@ const rules = {
 		exists: true,
 	},
 	status: {
-		isAlpha: { options: ['pl-PL'] },
+		matches: { options: ['[a-ząęśćźćńółżA-ZĄĘŚĆŹĆŃÓŁŻ ]'] },
 	},
 	category: {
-		isAlpha: { options: ['pl-PL'] },
+		matches: { options: ['[a-ząęśćźćńółżA-ZĄĘŚĆŹĆŃÓŁŻ ]'] },
 	},
-	lon: {
+	lng: {
 		isFloat: true,
 		toFloat: true,
 	},

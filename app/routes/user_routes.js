@@ -31,7 +31,7 @@ const inputRules = {
 	password: {
 		in: 'body',
 		trim: true,
-		isLength: { options: { min: 8 } },
+		isLength: { options: { min: 7 } },
 	},
 	
 	nickname: {
@@ -43,17 +43,29 @@ const inputRules = {
 	emailAgreement: {
 		in: 'body',
 		trim: true,
-		isIn: {
-			options: ['Y', 'N'],
-		},
+		custom: {
+      options: (value) => {
+				if (value === 'Y' || value ==='N') {
+					return value
+				} else {
+					return new Error('Wrong emailAgreement value!')
+				}
+      }
+    },
 	},
 	
 	gender: {
 		in: 'body',
 		trim: true,
-		isIn: {
-			options: ['M', 'F'],
-		},
+		custom: {
+      options: (value) => {
+				if (value === 'M' || value ==='F') {
+					return value
+				} else {
+					return new Error('Wrong gender value!')
+				}
+      }
+    },
 		optional: true,
 	},
 	
