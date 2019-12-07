@@ -8,10 +8,11 @@ const mailClient = require('../services/email_service')
 exports.get = async (req, res, next) => {
 	const user = req.locals.user
 	const subscriptionId = req.params.subscriptionId
+	const queries = req.query
 
 	const subscriptions = subscriptionId
-		? await user.getSubscriptions({ where: { id: subscriptionId } })
-		: await user.getSubscriptions()
+		? await user.getSubscriptions({ where: { ...queries, id: subscriptionId } })
+		: await user.getSubscriptions({ where: { ...queries } })
 
 	res.status(200).json(subscriptions)
 }
