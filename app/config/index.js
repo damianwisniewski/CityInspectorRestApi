@@ -12,7 +12,7 @@ exports.DATABASE_CONFIG = {
 	database: process.env.DATABASE_NAME,
 	host: process.env.DATABASE_HOST,
 	dialect: process.env.DATABASE_DIALECT,
-	loggin: false,
+	logging: false,
 }
 
 exports.EMAIL_CLIENT_CONFIG = {

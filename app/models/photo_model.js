@@ -79,12 +79,14 @@ module.exports = class Photo extends Model {
 		const { newPhotos, deletePhotos } = options
 		let availableFields = { amount: 5, free: ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'] }
 
-		if (!photo.isNewRecord && deletePhotos) {
-			const deletedPhotosData = photo.deletePhotos(deletePhotos)
+		if (!photo.isNewRecord) {
+			if (deletePhotos) {
+				const deletedPhotosData = photo.deletePhotos(deletePhotos)
 
-			for (const [columnName, imageId] of deletedPhotosData) {
-				photo.set({ [columnName]: null })
-				photo.cloudinaryState.toDelete.push(imageId)
+				for (const [columnName, imageId] of deletedPhotosData) {
+					photo.set({ [columnName]: null })
+					photo.cloudinaryState.toDelete.push(imageId)
+				}
 			}
 
 			availableFields = photo.getFreeSlots()

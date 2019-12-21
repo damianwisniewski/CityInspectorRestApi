@@ -54,7 +54,10 @@ module.exports = {
 		console.warn(NotificationId)
 		return new Promise((resolve, reject) => {
 			if (typeof NotificationId === 'string') {
-				cloudinary.api.delete_resources_by_tag(NotificationId, function(error, result) {
+				cloudinary.api.delete_resources_by_tag(NotificationId, { invalidate: true }, function(
+					error,
+					result,
+				) {
 					if (error) {
 						reject(error)
 					}
@@ -62,7 +65,10 @@ module.exports = {
 					resolve(result)
 				})
 			} else if (Array.isArray(NotificationId)) {
-				cloudinary.api.delete_resources(NotificationId, function(error, result) {
+				cloudinary.api.delete_resources(NotificationId, { invalidate: true }, function(
+					error,
+					result,
+				) {
 					if (error) {
 						reject(error)
 					}
@@ -97,6 +103,7 @@ module.exports = {
 						tags: NotificationId,
 						folder: 'city_inspector',
 						backup: true,
+						invalidate: true,
 					},
 					function(error, result) {
 						if (error) {
@@ -116,6 +123,8 @@ module.exports = {
 	 * @param {Array<string>} ids Ids of photos to restore
 	 */
 	restore: async function(ids) {
-		return Promise.all([ids.forEach(async id => await cloudinary.api.restore(id))])
+		return Promise.all([
+			ids.forEach(async id => await cloudinary.api.restore(id, { invalidate: true })),
+		])
 	},
 }

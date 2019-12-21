@@ -1,6 +1,7 @@
 const uuid = require('uuid/v4')
 const { Sequelize, sequelize, models } = require('../models')
 const { removeUndefinedProperties } = require('../utils/app_helpers/helpers')
+const Subscribers = require('../controllers/subscription_controller')
 
 const Op = Sequelize.Op
 
@@ -142,7 +143,6 @@ exports.getMany = async (req, res, next) => {
 		notifications = []
 	}
 
-	console.log(notifications)
 	res.status(200).json(notifications)
 }
 
@@ -160,6 +160,7 @@ exports.getSingle = async (req, res, next) => {
 			'id',
 			'title',
 			'description',
+			'createdAt',
 			[Sequelize.col('Status.name'), 'status'],
 			[Sequelize.col('Category.name'), 'category'],
 			[Sequelize.col('User.nickname'), 'user'],
@@ -197,6 +198,7 @@ exports.getSingle = async (req, res, next) => {
 			status: notification.get('status'),
 			category: notification.get('category'),
 			user: notification.get('user'),
+			date: notification.get('createdAt'),
 			photos: Object.values(notification.Photo.dataValues).filter(value => value),
 		})
 	} else {
@@ -256,7 +258,9 @@ exports.add = async (req, res, next) => {
 		await notification.Photo.commitPhotos()
 
 		transaction.commit()
-		res.status(204).json()
+		res.status(200).json({
+			id: notificationUUID,
+		})
 	} catch (err) {
 		/**
 		 * Transaction failed with error
@@ -326,6 +330,7 @@ exports.update = async (req, res, next) => {
 
 		await notification.Photo.commitPhotos()
 		transaction.commit()
+		Subscribers.notify(notificationUUID, 'j')
 		res.status(204).json()
 	} catch (err) {
 		/**
