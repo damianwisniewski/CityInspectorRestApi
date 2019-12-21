@@ -39,7 +39,7 @@ app.use(
 
 app.use(
 	cors({
-		// origin: /https?:\/\/(local-)?city-inspector.herokuapp.com(:\d*)/,
+		origin: /https?:\/\/(local-)?city-inspector.herokuapp.com(:\d*)/,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 		allowedHeaders: ['Content-Type', 'Authorization', 'Token-Refresh'],
 	}),
