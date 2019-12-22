@@ -40,8 +40,10 @@ app.use(
 app.use(
 	cors({
 		origin: [
+			'http://city-inspector.herokuapp.com',
 			'https://city-inspector.herokuapp.com',
 			'http://local-city-inspector.herokuapp.com:3000',
+			'https://local-city-inspector.herokuapp.com:3000',
 		],
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 		allowedHeaders: ['Content-Type', 'Authorization', 'Token-Refresh'],
