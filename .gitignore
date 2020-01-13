@@ -1,6 +1,6 @@
 node_modules
 
-**/.env.*
+**/.env.production
 
 .vscode
 .nyc_output
