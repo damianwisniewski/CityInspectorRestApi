@@ -14,7 +14,6 @@ module.exports = validationSchema => [
 	 * Middleware to handle validation result
 	 */
 	(req, res, next) => {
-		console.log('\n\nDalej\n\n', req.baseUrl)
 		const errors = validator.validationResult(req)
 		if (errors.isEmpty()) {
 			next()

@@ -13,9 +13,18 @@ describe('User database model', () => {
 	const UserInstance = new User()
 
 	context('has all required params', () => {
-		;['id', 'name', 'surname', 'gender', 'nickname', 'email', 'password', 'emailAgreement'].forEach(
-			checkPropertyExists(UserInstance),
-		)
+		const columns = [
+			'id',
+			'name',
+			'surname',
+			'gender',
+			'nickname',
+			'email',
+			'password',
+			'emailAgreement',
+		]
+
+		columns.forEach(checkPropertyExists(UserInstance))
 	})
 
 	context('has proper associations', () => {
