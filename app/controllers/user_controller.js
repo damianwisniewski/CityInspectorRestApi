@@ -57,6 +57,7 @@ exports.register = (req, res, next) => {
 	models.User.create(req.body)
 		.then(() => res.status(201).send())
 		.catch(err => {
+			console.log(err)
 			let errorObj = {
 				status: 401,
 				message: 'Invalid data!',

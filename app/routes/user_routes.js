@@ -72,21 +72,20 @@ const inputRules = {
 	name: {
 		in: 'body',
 		trim: true,
-		isAlpha: { options: ['pl-PL'] },
+		matches: { options: ['^[a-ząęśćźćńółżA-ZĄĘŚĆŹĆŃÓŁŻ]{2,}$'] },
 		optional: true,
 	},
 	
 	surname: {
 		in: 'body',
 		trim: true,
-		matches: { options: ['^[a-ząęśćźćńółżA-ZĄĘŚĆŹĆŃÓŁŻ0-9-]{2,}$'] },
+		matches: { options: ['^[a-ząęśćźćńółżA-ZĄĘŚĆŹĆŃÓŁŻ-]{2,}$'] },
 		optional: true,
 	},
 	
 	city: {
 		in: 'body',
 		trim: true,
-		isAlpha: { options: ['pl-PL'] },
 		optional: true,
 	},
 	
