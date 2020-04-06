@@ -85,7 +85,7 @@ describe('[ PUT ] /user', () => {
 		}
 
 		Object.keys(invalidData).forEach((param, index) => {
-			it(`should fail and respond with status 401, for invalid ${param} to update`, done => {
+			it(`should fail and respond with status 422, for invalid ${param} to update`, done => {
 				chai
 					.request(app)
 					.put('/user/')
@@ -96,8 +96,7 @@ describe('[ PUT ] /user', () => {
 					.end((err, res) => {
 						expect(err).not.to.exist
 
-						expect(res.status).to.be.equal(401)
-						expect(res.body).to.be.deep.equal({ message: 'Invalid data!' })
+						expect(res.status).to.be.oneOf([401, 422])
 
 						done(err)
 					})
@@ -115,7 +114,7 @@ describe('[ PUT ] /user', () => {
 		}
 
 		Object.keys(invalidData).forEach((param, index) => {
-			it(`should succeed and respond with status 200, for valid ${param} to update`, done => {
+			it(`should succeed and respond with status 204, for valid ${param} to update`, done => {
 				chai
 					.request(app)
 					.put('/user/')
@@ -126,7 +125,7 @@ describe('[ PUT ] /user', () => {
 					.end((err, res) => {
 						expect(err).not.to.exist
 
-						expect(res.status).to.be.equal(200)
+						expect(res.status).to.be.equal(204)
 						expect(res.body).to.be.empty
 
 						done(err)

@@ -22,7 +22,7 @@ describe('[ GET ] /user/refresh', () => {
 			})
 	})
 
-	it('should fail and respond with status 403, for no authorization header in request', done => {
+	it('should fail and respond with status 422, for no authorization header in request', done => {
 		chai
 			.request(app)
 			.get('/user/refresh')
@@ -30,14 +30,16 @@ describe('[ GET ] /user/refresh', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(403)
-				expect(res.body).to.be.deep.equal({ message: 'You have no permission!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'headers/token-refresh' },
+				})
 
 				done(err)
 			})
 	})
 
-	it('should fail and respond with status 400 for missing refresh token in header', done => {
+	it('should fail and respond with status 422 for missing refresh token in header', done => {
 		chai
 			.request(app)
 			.get('/user/refresh')
@@ -46,8 +48,10 @@ describe('[ GET ] /user/refresh', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(400)
-				expect(res.body).to.be.deep.equal({ message: 'Missing refresh token' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'headers/token-refresh' },
+				})
 
 				done(err)
 			})
@@ -81,7 +85,7 @@ describe('[ GET ] /user/refresh', () => {
 				expect(err).not.to.exist
 
 				expect(res.status).to.be.equal(200)
-				expect(res.body).to.have.keys(['token', 'expiresIn', 'refreshToken'])
+				expect(res.body).to.have.keys(['token', 'expiresIn', 'refreshToken', 'email', 'nickname'])
 
 				done(err)
 			})

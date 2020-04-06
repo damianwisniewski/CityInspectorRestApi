@@ -30,14 +30,16 @@ describe('[ GET ] /user/logout', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(403)
-				expect(res.body).to.be.deep.equal({ message: 'You have no permission!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'headers/token-refresh' },
+				})
 
 				done()
 			})
 	})
 
-	it('should respond with error (status 412) for request without token-refresh header', done => {
+	it('should respond with error (status 422) for request without token-refresh header', done => {
 		chai
 			.request(app)
 			.get('/user/logout')
@@ -46,9 +48,9 @@ describe('[ GET ] /user/logout', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(412)
+				expect(res.status).to.be.equal(422)
 				expect(res.body).to.be.deep.equal({
-					message: 'Refresh token header is missing, it have to be revoked also',
+					message: { info: 'Invalid value', field: 'headers/token-refresh' },
 				})
 
 				done()

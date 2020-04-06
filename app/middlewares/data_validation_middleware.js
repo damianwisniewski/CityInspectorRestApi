@@ -19,7 +19,6 @@ module.exports = validationSchema => [
 			next()
 		} else {
 			const firstError = errors.array({ onlyFirstError: true })[0]
-			console.log(firstError)
 			next({
 				status: 422,
 				message: {

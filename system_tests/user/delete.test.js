@@ -33,7 +33,6 @@ describe('[ DELETE ] /user', () => {
 				nickname: 'tester',
 				email: 'test@example.org',
 				password: 'tester123',
-				privateData: 'Y',
 				emailAgreement: 'Y',
 			})
 			.end((err, res) => {

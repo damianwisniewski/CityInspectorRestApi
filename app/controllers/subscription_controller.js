@@ -101,18 +101,6 @@ exports.notify = async (id, changes, content) => {
 
 	subscribers.forEach(sub => {
 		if (sub.get('emailAgreement') === 'Y') {
-			console.log({
-				to: sub.get('email'),
-				subject: 'Zmiany w: ' + notif.title,
-				text: `
-				${changes}
-				${content || ''}
-				`,
-				html: `
-				${changes}
-				${content || ''}
-				`,
-			})
 			mailClient.sendMessage({
 				to: sub.get('email'),
 				subject: 'Zmiany w: ' + notif.title,

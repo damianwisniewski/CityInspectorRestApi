@@ -27,7 +27,7 @@ describe('[ POST ] /user', () => {
 			})
 	})
 
-	it('should fail and respond with status 400 for no email', done => {
+	it('should fail and respond with status 422 for no email', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
@@ -44,14 +44,16 @@ describe('[ POST ] /user', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(400)
-				expect(res.body).to.be.deep.equal({ message: 'Missing data!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'body/email' },
+				})
 
 				done(err)
 			})
 	})
 
-	it('should fail and respond with status 400 for no password', done => {
+	it('should fail and respond with status 422 for no password', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
@@ -68,14 +70,16 @@ describe('[ POST ] /user', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(400)
-				expect(res.body).to.be.deep.equal({ message: 'Missing data!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'body/password' },
+				})
 
 				done(err)
 			})
 	})
 
-	it('should fail and respond with status 400 for no nickname', done => {
+	it('should fail and respond with status 422 for no nickname', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
@@ -92,14 +96,16 @@ describe('[ POST ] /user', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(400)
-				expect(res.body).to.be.deep.equal({ message: 'Missing data!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'body/nickname' },
+				})
 
 				done(err)
 			})
 	})
 
-	it('should fail and respond with status 400 for no emailAgreement', done => {
+	it('should fail and respond with status 422 for no emailAgreement', done => {
 		const registerData = {
 			name: 'Janek',
 			surname: 'Fake',
@@ -115,14 +121,19 @@ describe('[ POST ] /user', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(400)
-				expect(res.body).to.be.deep.equal({ message: 'Missing data!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: {
+						field: 'body/password',
+						info: 'Invalid value',
+					},
+				})
 
 				done(err)
 			})
 	})
 
-	it('should fail and respond with status 401 for data (email, nickname) that already exist', done => {
+	it('should fail and respond with status 409 for data (email, nickname) that already exist', done => {
 		const registerData = {
 			nickname: 'fake',
 			email: 'fake@example.org',
@@ -142,8 +153,14 @@ describe('[ POST ] /user', () => {
 					.end((err, res) => {
 						expect(err).not.to.exist
 
-						expect(res.status).to.be.equal(401)
-						expect(res.body).to.be.deep.equal({ message: 'Invalid data!' })
+						expect(res.status).to.be.equal(409)
+						expect(res.body).to.be.deep.equal({
+							message: {
+								field: 'nickname',
+								info: 'nickname must be unique',
+								reason: 'not_unique',
+							},
+						})
 
 						done(err)
 					})

@@ -18,7 +18,7 @@ describe('[ POST ] /user/login', () => {
 				expect(err).not.to.exist
 
 				expect(res.status).to.be.equal(200)
-				expect(res.body).to.have.keys('token', 'expiresIn', 'refreshToken')
+				expect(res.body).to.have.keys('token', 'expiresIn', 'refreshToken', 'email', 'nickname')
 
 				done()
 			})
@@ -35,14 +35,16 @@ describe('[ POST ] /user/login', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(401)
-				expect(res.body).to.be.deep.equal({ message: 'Invalid auth data' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'body/email' },
+				})
 
 				done()
 			})
 	})
 
-	it('should respond with 400 status and error message for no passed email and password', done => {
+	it('should respond with 422 status and error message for no passed email and password', done => {
 		chai
 			.request(app)
 			.post('/user/login')
@@ -50,8 +52,10 @@ describe('[ POST ] /user/login', () => {
 			.end((err, res) => {
 				expect(err).not.to.exist
 
-				expect(res.status).to.be.equal(400)
-				expect(res.body).to.be.deep.equal({ message: 'Missing data!' })
+				expect(res.status).to.be.equal(422)
+				expect(res.body).to.be.deep.equal({
+					message: { info: 'Invalid value', field: 'body/email' },
+				})
 
 				done()
 			})

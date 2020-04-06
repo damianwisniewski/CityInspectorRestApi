@@ -47,6 +47,7 @@ describe('[ GET ] /user', () => {
 				expect(res.status).to.be.equal(200)
 				expect(res.body).to.have.keys(
 					'name',
+					'city',
 					'email',
 					'emailAgreement',
 					'gender',

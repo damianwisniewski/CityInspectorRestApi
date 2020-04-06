@@ -23,10 +23,10 @@
 		"db-sync:dev": "node scripts/sync_database.js",
 		"db-sync:force:dev": "node scripts/sync_database.js --force",
 		"db-fill:dev": "node scripts/fill_database.js",
-		"test": "mocha \"./app/**/user_model.test.js\"",
+		"test": "cross-env NODE_ENV=PRODUCTION mocha \"./app/**/*.test.js\"",
 		"test:watch": "npm test -- --watch",
 		"test:coverage": "nyc report",
-		"test:system": "mocha --exit \"./system_tests/**/*.test.js\"",
+		"test:system": "cross-env NODE_ENV=PRODUCTION mocha --exit \"./system_tests/**/*.test.js\"",
 		"lint": "eslint app/**/*.js"
 	},
 	"husky": {
