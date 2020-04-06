@@ -49,7 +49,7 @@ describe('Data validation middleware', () => {
 
 		const next = args => {
 			try {
-				expect(args).to.have.keys('status', 'message')
+				expect(args).to.have.keys('error', 'status', 'message')
 				done()
 			} catch (err) {
 				done(err)

@@ -15,15 +15,9 @@ module.exports = class User extends Model {
 				},
 				name: {
 					type: DataTypes.STRING,
-					validate: {
-						isAlpha: true,
-					},
 				},
 				surname: {
 					type: DataTypes.STRING,
-					validate: {
-						isAlpha: true,
-					},
 				},
 				city: {
 					type: DataTypes.STRING,
@@ -38,9 +32,6 @@ module.exports = class User extends Model {
 					type: DataTypes.STRING,
 					allowNull: false,
 					unique: true,
-					validate: {
-						isAlphanumeric: true,
-					},
 				},
 				email: {
 					type: DataTypes.STRING,

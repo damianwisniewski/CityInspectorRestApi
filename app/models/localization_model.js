@@ -26,21 +26,12 @@ module.exports = class Localization extends Model {
 				},
 				city: {
 					type: DataTypes.STRING,
-					validate: {
-						is: /[\da-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż-]/g,
-					},
 				},
 				street: {
 					type: DataTypes.STRING,
-					validate: {
-						is: /[-/\da-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g,
-					},
 				},
 				number: {
 					type: DataTypes.STRING,
-					validate: {
-						is: /[-/\da-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g,
-					},
 				},
 				post: {
 					type: DataTypes.STRING,

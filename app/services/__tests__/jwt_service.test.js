@@ -9,7 +9,7 @@ const { JWT_SECRET_KEY } = require('../../config')
 chai.use(sinonChai)
 
 describe('JWT Service', () => {
-	after(e => {
+	after(() => {
 		webTokenService.blacklist.clear()
 		clearInterval(webTokenService.loopInterval)
 	})

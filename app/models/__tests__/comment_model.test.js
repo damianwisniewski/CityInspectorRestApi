@@ -32,13 +32,5 @@ describe('Comment database model', () => {
 				onUpdate: 'NO ACTION',
 			})
 		})
-
-		it(`with model other Comment as Subcomment`, () => {
-			expect(Comment.hasMany).to.have.been.calledWithExactly(Comment, {
-				as: 'Subcomment',
-				onDelete: 'CASCADE',
-				onUpdate: 'NO ACTION',
-			})
-		})
 	})
 })
