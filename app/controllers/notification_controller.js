@@ -330,7 +330,10 @@ exports.update = async (req, res, next) => {
 
 		await notification.Photo.commitPhotos()
 		transaction.commit()
-		Subscribers.notify(notificationUUID, 'j')
+		Subscribers.notify(
+			notificationUUID,
+			`Dokonano zmian w danych, dotyczących zgłoszenia nr ${notificationUUID}`,
+		)
 		res.status(204).json()
 	} catch (err) {
 		/**

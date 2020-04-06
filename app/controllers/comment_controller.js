@@ -1,4 +1,5 @@
 const { Sequelize, models } = require('../models')
+const Subscribers = require('../controllers/subscription_controller')
 
 /**
  * Get controller
@@ -39,6 +40,12 @@ exports.create = async (req, res, next) => {
 			text: req.body.text,
 			NotificationId: req.params.notificationId,
 		})
+
+		Subscribers.notify(
+			req.params.notificationId,
+			`Dokonano nowy komentarz do zgłoszenia ${req.params.notificationId}`,
+			`${req.body.text}`,
+		)
 
 		res.sendStatus(201)
 	} catch (err) {

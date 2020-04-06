@@ -87,7 +87,7 @@ exports.remove = async (req, res, next) => {
 /**
  * Function for notify all subscribents
  */
-exports.notify = async (id, changes) => {
+exports.notify = async (id, changes, content) => {
 	const notif = await models.Notification.findByPk(id)
 	const subscribers = await notif.getSubscriptions({
 		attributes: {
@@ -101,16 +101,49 @@ exports.notify = async (id, changes) => {
 
 	subscribers.forEach(sub => {
 		if (sub.get('emailAgreement') === 'Y') {
+			console.log({
+				to: sub.get('email'),
+				subject: 'Zmiany w: ' + notif.title,
+				text: `
+				${changes}
+				${content || ''}
+				`,
+				html: `
+				${changes}
+				${content || ''}
+				`,
+			})
 			mailClient.sendMessage({
 				to: sub.get('email'),
 				subject: 'Zmiany w: ' + notif.title,
-				text: '',
-				html: '',
+				text: `
+				${changes}
+				${content || ''}
+				`,
+				html: `
+				<br>
+				<p>${changes}</p>
+				<br>
+				${
+					content
+						? `
+					<blockquote style="
+						background-color: #cccccc;
+						padding: 5px;
+						font-size: 14px;
+						color: black;"
+					>
+						${content}
+					</blockquote>
+					<br>
+					`
+						: ''
+				}
+				<a href='http://city-inspector.herokuapp.com/zgloszenie/${
+					notif.id
+				}'>Kliknij aby sprawdzić zgłoszenie</a>
+				`,
 			})
 		}
-
-		subscribers.update({
-			changes: sub.get('changes') + `${changes}$$`,
-		})
 	})
 }

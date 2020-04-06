@@ -18,13 +18,17 @@ const inputRules = {
 		in: 'params',
 		custom: {
 			options: async value => {
-				const notificationExist = Boolean(await models.Notification.findByPk(value))
-				
-				if (!notificationExist) {
-					throw new Error('Provided notificationId is incorrect, notification does not exist for this number!!')
+				if (value) {
+					const notificationExist = Boolean(await models.Notification.findByPk(value))
+					
+					if (!notificationExist) {
+						throw new Error('Provided notificationId is incorrect, notification does not exist for this number!!')
+					}
+					
+					return notificationExist
 				}
 				
-				return notificationExist
+				return true
 			}
 		}
 	}
